@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import { useSettings } from './store/settingsStore'
 import { useLibrary } from './store/libraryStore'
 import { useSession } from './store/sessionStore'
+import { usePlayer } from './store/playerStore'
 import Sidebar from './components/Sidebar'
 import MobileTabBar from './components/MobileTabBar'
 import PlayerBar from './components/PlayerBar'
@@ -22,9 +23,10 @@ export default function App() {
   const ready = useSettings((s) => s.ready)
 
   useEffect(() => {
-    useSettings.getState().init().then(() => {
-      useLibrary.getState().init()
+    useSettings.getState().init().then(async () => {
+      await useLibrary.getState().init()
       useSession.getState().init()
+      usePlayer.getState().restoreSession() // resume where you left off
     })
   }, [])
 

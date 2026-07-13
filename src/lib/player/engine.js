@@ -267,6 +267,20 @@ class PlayerEngine {
     }
   }
 
+  // Load a url into the active slot WITHOUT playing (autoplay is blocked on
+  // page load) — used to restore a saved session paused at its position.
+  async loadPaused(url) {
+    const old = this.active
+    const next = this.idle
+    await next.load(url)
+    old.clear()
+    old.setFade(1)
+    this.activeIndex = 1 - this.activeIndex
+    this.active.setFade(1)
+    this.preloadedUrl = null
+    this.emit('time', { position: this.active.el.currentTime, duration: this.active.el.duration || 0 })
+  }
+
   pause() {
     this.active.pause()
   }
@@ -275,6 +289,9 @@ class PlayerEngine {
   }
   get playing() {
     return !this.active.el.paused
+  }
+  get hasLoaded() {
+    return !!this.active.loadedUrl
   }
   get position() {
     return this.active.el.currentTime

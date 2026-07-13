@@ -1,4 +1,4 @@
-import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, Heart, ListMusic, Volume2, VolumeX, MonitorSmartphone, ChevronUp, Users } from 'lucide-react'
+import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, Heart, ListMusic, Volume2, VolumeX, MonitorSmartphone, ChevronUp, Users, X } from 'lucide-react'
 import { usePlayer } from '../store/playerStore'
 import { useLibrary } from '../store/libraryStore'
 import { useSettings } from '../store/settingsStore'
@@ -101,13 +101,16 @@ export default function PlayerBar() {
           </div>
         </div>
 
-        {/* mobile play/next */}
+        {/* mobile play/next/close */}
         <div className="flex md:hidden items-center gap-1">
           <button onClick={player.toggle} className="w-10 h-10 rounded-full bg-white text-black grid place-items-center">
             {playing ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" className="ml-0.5" />}
           </button>
           <button onClick={() => player.next()} className="p-2 text-white/80">
             <SkipForward size={20} fill="currentColor" />
+          </button>
+          <button onClick={player.close} className="p-2 text-muted hover:text-white transition" title="Close">
+            <X size={19} />
           </button>
         </div>
 
@@ -169,6 +172,13 @@ export default function PlayerBar() {
             className="w-24"
             style={{ '--fill': `${volume * 100}%` }}
           />
+          <button
+            onClick={player.close}
+            className="p-2 rounded-full text-muted hover:text-white transition"
+            title="Close song"
+          >
+            <X size={17} />
+          </button>
         </div>
       </div>
       {/* mobile progress hairline */}

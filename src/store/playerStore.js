@@ -34,6 +34,55 @@ function applyMediaSession(track) {
   })
 }
 
+// ---- session persistence (resume where you left off across reloads) ----
+const SESSION_KEY = 'raaga:session'
+
+// drop the local blob: art URL — it's a session-scoped object URL that's dead
+// after reload; it re-resolves from the track's artBlobId via the library.
+function stripArt(t) {
+  if (t && t.source === 'local' && typeof t.artUrl === 'string' && t.artUrl.startsWith('blob:')) {
+    const { artUrl, ...rest } = t
+    return rest
+  }
+  return t
+}
+
+function saveSession() {
+  const { current, queue, originalQueue, index, position, shuffle, repeat } = usePlayer.getState()
+  if (!current || !queue.length) return clearSession()
+  try {
+    localStorage.setItem(
+      SESSION_KEY,
+      JSON.stringify({
+        queue: queue.map(stripArt),
+        originalQueue: originalQueue.map(stripArt),
+        index,
+        position,
+        shuffle,
+        repeat,
+      })
+    )
+  } catch {
+    /* storage full / unavailable — non-fatal */
+  }
+}
+
+function clearSession() {
+  try {
+    localStorage.removeItem(SESSION_KEY)
+  } catch {
+    /* ignore */
+  }
+}
+
+let lastSessionSave = 0
+function persistSession(force) {
+  const now = Date.now()
+  if (!force && now - lastSessionSave < 3000) return
+  lastSessionSave = now
+  saveSession()
+}
+
 export const usePlayer = create((set, get) => ({
   current: null,
   queue: [],
@@ -102,9 +151,20 @@ export const usePlayer = create((set, get) => ({
   },
 
   toggle: async () => {
-    if (!get().current) return
-    if (engine.playing) engine.pause()
-    else await engine.resume()
+    const s = get()
+    if (!s.current) return
+    if (engine.playing) {
+      engine.pause()
+      return
+    }
+    if (engine.hasLoaded) {
+      await engine.resume()
+    } else {
+      // restored session whose audio isn't loaded yet — (re)load then resume
+      const resumeAt = s.position
+      await get()._start(s.current, { fade: false })
+      if (resumeAt > 1) engine.seek(resumeAt)
+    }
   },
 
   next: async ({ fade = false, manual = true } = {}) => {
@@ -189,12 +249,85 @@ export const usePlayer = create((set, get) => ({
     const { queue, index, position, playing } = get()
     return { queue, index, position, playing }
   },
+
+  // Close the current song entirely: stop playback, clear the player bar, and
+  // forget the saved session so a refresh won't bring it back.
+  close: () => {
+    flushListenLog()
+    engine.stop()
+    clearSession()
+    set({
+      current: null,
+      queue: [],
+      originalQueue: [],
+      index: -1,
+      playing: false,
+      position: 0,
+      duration: 0,
+      peaks: null,
+      loadError: null,
+      queueOpen: false,
+      nowPlayingOpen: false,
+    })
+  },
+
+  // Restore the last session on boot (loaded but paused at its position, since
+  // browsers block autoplay before a user gesture). Call after the library has
+  // loaded so local artwork can be re-hydrated.
+  restoreSession: async () => {
+    if (get().current) return
+    let saved
+    try {
+      saved = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null')
+    } catch {
+      saved = null
+    }
+    if (!saved || !Array.isArray(saved.queue) || !saved.queue.length) return
+
+    const libTracks = useLibrary.getState().tracks
+    const hydrate = (t) => {
+      const lib = libTracks.find((x) => x.id === t.id)
+      return lib ? { ...t, ...lib } : t // library copy has a fresh art URL / blobId
+    }
+    const queue = saved.queue.map(hydrate)
+    const originalQueue = (saved.originalQueue?.length ? saved.originalQueue : saved.queue).map(hydrate)
+    const index = saved.index >= 0 && saved.index < queue.length ? saved.index : 0
+    const cur = queue[index]
+    if (!cur) return
+
+    set({
+      queue,
+      originalQueue,
+      index,
+      current: cur,
+      shuffle: !!saved.shuffle,
+      repeat: saved.repeat || 'off',
+      position: saved.position || 0,
+      duration: cur.duration || 0,
+      playing: false,
+    })
+    applyMediaSession(cur)
+    getWaveform(cur.id).then((w) => {
+      if (get().current?.id === cur.id) set({ peaks: w?.peaks || null })
+    })
+    try {
+      const url = await resolveUrl(cur)
+      if (url) {
+        await engine.loadPaused(url)
+        if (saved.position > 1) engine.seek(saved.position)
+        set({ position: saved.position || 0 })
+      }
+    } catch {
+      /* couldn't preload (e.g. offline remote track) — will load on first play */
+    }
+  },
 }))
 
 // ---- engine wiring (module scope, once) ----
 engine.on('time', ({ position, duration }) => {
   const s = usePlayer.getState()
   usePlayer.setState({ position, duration: duration || s.duration })
+  persistSession() // throttled: keeps the saved resume-position current
 
   if (!engine.playing || !duration || s.advancing) return
   const remaining = duration - position
@@ -243,6 +376,24 @@ if ('mediaSession' in navigator) {
 }
 
 window.addEventListener('beforeunload', flushListenLog)
+
+// Persist the session immediately when the track/position-relevant state
+// changes, and flush on hide/unload so a resume is always up to date.
+usePlayer.subscribe((state, prev) => {
+  if (
+    state.current?.id !== prev.current?.id ||
+    state.index !== prev.index ||
+    state.shuffle !== prev.shuffle ||
+    state.repeat !== prev.repeat ||
+    state.playing !== prev.playing
+  ) {
+    persistSession(true)
+  }
+})
+window.addEventListener('pagehide', saveSession)
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') saveSession()
+})
 
 if (import.meta.env.DEV) window.__raagaStores = { usePlayer, useSettings, useLibrary }
 
