@@ -3,10 +3,10 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// Served from https://<user>.github.io/raaga/ on GitHub Pages, so assets and
-// the service worker live under /raaga/. Override with BASE_PATH=/ for root
-// hosting (Netlify, a custom domain, local `vite preview`).
-const base = process.env.BASE_PATH || '/raaga/'
+// Root-hosted by default (Vercel, Netlify, Cloudflare Pages, a custom domain).
+// For a GitHub Pages project site, build with BASE_PATH=/raaga/ so assets and
+// the service worker resolve under the repo subpath.
+const base = process.env.BASE_PATH || '/'
 
 export default defineConfig({
   base,
