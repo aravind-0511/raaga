@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Volume2, Palette, Waves, Globe, MonitorSmartphone, Check, RotateCcw, Sun, Moon } from 'lucide-react'
 import { useSettings } from '../store/settingsStore'
 import { useSession } from '../store/sessionStore'
-import { DEFAULT_CATALOG_URL } from '../lib/catalog/saavn'
+import { DEFAULT_CATALOG_URL, isValidCatalogUrl } from '../lib/catalog/saavn'
 import { cn } from '../lib/utils'
 
 const QUALITIES = [
@@ -37,7 +37,18 @@ export default function Settings() {
   const session = useSession.getState()
   const peers = useSession((s) => s.peers)
   const [urlDraft, setUrlDraft] = useState(settings.catalogUrl)
+  const [urlError, setUrlError] = useState(false)
   const isLight = settings.theme === 'light'
+
+  const saveCatalogUrl = () => {
+    const trimmed = urlDraft.trim()
+    if (trimmed && !isValidCatalogUrl(trimmed)) {
+      setUrlError(true)
+      return
+    }
+    setUrlError(false)
+    settings.setSetting('catalogUrl', trimmed || DEFAULT_CATALOG_URL)
+  }
 
   return (
     <div className="fade-up max-w-2xl">
@@ -140,12 +151,19 @@ export default function Settings() {
         <div className="flex gap-2">
           <input
             value={urlDraft}
-            onChange={(e) => setUrlDraft(e.target.value)}
+            onChange={(e) => {
+              setUrlDraft(e.target.value)
+              setUrlError(false)
+            }}
+            onKeyDown={(e) => e.key === 'Enter' && saveCatalogUrl()}
             spellCheck={false}
-            className="flex-1 rounded-xl bg-overlay/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 font-mono"
+            className={cn(
+              'flex-1 rounded-xl bg-overlay/5 border px-3.5 py-2.5 text-sm outline-none font-mono',
+              urlError ? 'border-rose-400/60' : 'border-line focus:border-accent-hi/60'
+            )}
           />
           <button
-            onClick={() => settings.setSetting('catalogUrl', urlDraft.trim() || DEFAULT_CATALOG_URL)}
+            onClick={saveCatalogUrl}
             className="rounded-xl bg-accent hover:bg-accent-hi px-4 text-sm font-medium text-white transition"
           >
             Save
@@ -153,6 +171,7 @@ export default function Settings() {
           <button
             onClick={() => {
               setUrlDraft(DEFAULT_CATALOG_URL)
+              setUrlError(false)
               settings.setSetting('catalogUrl', DEFAULT_CATALOG_URL)
             }}
             className="rounded-xl bg-overlay/6 hover:bg-overlay/12 px-3 text-muted hover:text-ink transition"
@@ -161,6 +180,11 @@ export default function Settings() {
             <RotateCcw size={15} />
           </button>
         </div>
+        {urlError && (
+          <p className="text-xs text-rose-300 mt-2">
+            That doesn't look like a valid http(s) URL — check it and try again.
+          </p>
+        )}
       </Section>
 
       <Section

@@ -26,7 +26,7 @@ export default function Sidebar() {
   return (
     <aside className="hidden md:flex flex-col w-60 shrink-0 border-r border-line px-3 py-5 gap-1">
       <div className="flex items-center gap-2.5 px-3 mb-5">
-        <img src="/favicon.svg" alt="" className="w-8 h-8 rounded-lg accent-glow" />
+        <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="w-8 h-8 rounded-lg accent-glow" />
         <span className="text-lg font-bold tracking-tight flex-1">Raaga</span>
         <button
           onClick={toggleTheme}

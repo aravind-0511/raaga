@@ -10,8 +10,22 @@ const FALLBACK_URLS = [DEFAULT_CATALOG_URL, 'https://saavn.sumit.co']
 
 let baseUrl = DEFAULT_CATALOG_URL
 let workingUrl = null // last instance that actually answered
+
+// Only accept well-formed http(s) origins — rejects things like `javascript:`,
+// bare garbage strings, or other schemes that would otherwise throw deep
+// inside fetch() call sites instead of failing fast with a clear reason.
+export function isValidCatalogUrl(url) {
+  try {
+    const parsed = new URL(url)
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
 export function setCatalogBase(url) {
-  baseUrl = (url || DEFAULT_CATALOG_URL).replace(/\/+$/, '')
+  const clean = (url || '').trim().replace(/\/+$/, '')
+  baseUrl = clean && isValidCatalogUrl(clean) ? clean : DEFAULT_CATALOG_URL
   workingUrl = null
 }
 
