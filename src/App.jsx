@@ -42,7 +42,7 @@ export default function App() {
     <div className="h-full flex flex-col">
       <div className="flex flex-1 min-h-0">
         <Sidebar />
-        <main className="flex-1 min-w-0 overflow-y-auto px-4 md:px-8 pt-6 pb-40 md:pb-32">
+        <main className="flex-1 min-w-0 overflow-y-auto px-4 md:px-8 pt-6 pb-8 md:pb-10">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/search" element={<Search />} />

@@ -108,6 +108,23 @@ export const useLibrary = create((set, get) => ({
     set((s) => ({ tracks: [track, ...s.tracks.filter((t) => t.id !== track.id)] }))
   },
 
+  // Rename a track's title/artist. Works for any track (saves it first if it
+  // isn't in the library yet). Persists the clean IDB record + patch so a
+  // transient blob art URL is never written back.
+  renameTrack: async (track, patch) => {
+    const clean = {}
+    if (typeof patch.title === 'string' && patch.title.trim()) clean.title = patch.title.trim()
+    if (typeof patch.artist === 'string' && patch.artist.trim()) clean.artist = patch.artist.trim()
+    if (!Object.keys(clean).length) return
+    await get().saveRemoteTrack(track)
+    const base = (await getTrack(track.id)) || track
+    await putTrack({ ...base, ...clean })
+    set((s) => ({ tracks: s.tracks.map((t) => (t.id === track.id ? { ...t, ...clean } : t)) }))
+    const { usePlayer } = await import('./playerStore')
+    const cur = usePlayer.getState().current
+    if (cur?.id === track.id) usePlayer.setState({ current: { ...cur, ...clean } })
+  },
+
   // ---- likes ----
   toggleLike: async (track) => {
     const liked = !!get().likes[track.id]

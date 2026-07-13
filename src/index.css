@@ -73,7 +73,25 @@ input[type="range"]::-webkit-slider-thumb {
   opacity: 0;
   transition: opacity 0.15s;
 }
+input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
 input[type="range"]:hover::-webkit-slider-thumb { opacity: 1; }
+input[type="range"]:hover::-moz-range-thumb { opacity: 1; }
+
+/* Touch/coarse-pointer devices have no hover — keep the handle visible and
+   give it a larger, easier-to-grab size. */
+@media (hover: none), (pointer: coarse) {
+  input[type="range"] { height: 6px; }
+  input[type="range"]::-webkit-slider-thumb { opacity: 1; width: 18px; height: 18px; }
+  input[type="range"]::-moz-range-thumb { opacity: 1; width: 18px; height: 18px; }
+}
 
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(10px); }

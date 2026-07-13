@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Play, Pencil, Trash2, Users, GripVertical, ImagePlus, Check } from 'lucide-react'
+import { Play, Pencil, Trash2, Users, GripVertical, ImagePlus, Check, ChevronUp, ChevronDown } from 'lucide-react'
 import { useLibrary } from '../store/libraryStore'
 import { usePlayer } from '../store/playerStore'
 import { useSession } from '../store/sessionStore'
@@ -61,12 +61,21 @@ export default function PlaylistDetail() {
       <div className="flex flex-col sm:flex-row gap-5 sm:items-end mb-6">
         <div className="relative group w-40 h-40 shrink-0">
           <Art src={playlist.coverUrl} size="w-40 h-40" rounded="rounded-2xl" iconSize={40} className="accent-glow" />
+          {/* desktop: hover overlay */}
           <button
             onClick={() => coverInput.current?.click()}
-            className="absolute inset-0 rounded-2xl grid place-items-center bg-black/50 opacity-0 group-hover:opacity-100 transition"
+            className="hidden md:grid absolute inset-0 rounded-2xl place-items-center bg-black/50 opacity-0 group-hover:opacity-100 transition"
             title="Change cover"
           >
             <ImagePlus size={22} />
+          </button>
+          {/* mobile: always-visible badge (avoids an invisible full-cover tap target) */}
+          <button
+            onClick={() => coverInput.current?.click()}
+            className="md:hidden absolute bottom-2 right-2 w-9 h-9 grid place-items-center rounded-full bg-black/70 backdrop-blur text-white shadow-lg"
+            title="Change cover"
+          >
+            <ImagePlus size={16} />
           </button>
           <input
             ref={coverInput}
@@ -170,7 +179,27 @@ export default function PlaylistDetail() {
             onDragEnd={() => setDragOverIndex(null)}
             className={cn('flex items-center gap-1 rounded-xl transition', dragOverIndex === i && 'outline-2 outline-accent-hi/60')}
           >
-            <GripVertical size={14} className="text-muted/50 cursor-grab shrink-0 ml-1" />
+            {/* desktop: drag handle */}
+            <GripVertical size={14} className="hidden md:block text-muted/50 cursor-grab shrink-0 ml-1" />
+            {/* mobile: up/down buttons (HTML5 drag doesn't work on touch) */}
+            <div className="md:hidden flex flex-col shrink-0 -my-1">
+              <button
+                onClick={() => reorder(i, i - 1)}
+                disabled={i === 0}
+                className="p-0.5 text-muted disabled:opacity-25 active:text-white"
+                title="Move up"
+              >
+                <ChevronUp size={16} />
+              </button>
+              <button
+                onClick={() => reorder(i, i + 1)}
+                disabled={i === items.length - 1}
+                className="p-0.5 text-muted disabled:opacity-25 active:text-white"
+                title="Move down"
+              >
+                <ChevronDown size={16} />
+              </button>
+            </div>
             <div className="flex-1 min-w-0">
               <TrackRow
                 track={t}

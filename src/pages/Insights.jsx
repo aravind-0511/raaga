@@ -106,9 +106,16 @@ export default function Insights() {
       <SectionTitle>Last 14 days</SectionTitle>
       <div className="glass rounded-2xl p-4 h-56">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={stats.days} margin={{ top: 5, right: 5, bottom: 0, left: -20 }}>
-            <XAxis dataKey="day" tick={{ fill: '#8b87a0', fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: '#8b87a0', fontSize: 11 }} axisLine={false} tickLine={false} />
+          <BarChart data={stats.days} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+            <XAxis
+              dataKey="day"
+              tick={{ fill: '#8b87a0', fontSize: 11 }}
+              axisLine={false}
+              tickLine={false}
+              interval="preserveStartEnd"
+              minTickGap={10}
+            />
+            <YAxis tick={{ fill: '#8b87a0', fontSize: 11 }} axisLine={false} tickLine={false} width={28} allowDecimals={false} />
             <Tooltip
               cursor={{ fill: 'rgba(255,255,255,0.05)' }}
               contentStyle={{ background: '#1c1930', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }}

@@ -18,7 +18,7 @@ export default function MobileTabBar() {
           key={to}
           to={to}
           className={({ isActive }) =>
-            cn('flex flex-col items-center gap-0.5 px-3 py-0.5 text-[10px] transition', isActive ? 'text-accent-hi' : 'text-muted')
+            cn('flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] transition', isActive ? 'text-accent-hi' : 'text-muted')
           }
         >
           <Icon size={19} />

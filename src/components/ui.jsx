@@ -24,7 +24,7 @@ export function Modal({ open, onClose, title, children, wide = false }) {
       <div
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          'glass relative w-full rounded-t-2xl md:rounded-2xl p-5 fade-up max-h-[85vh] overflow-y-auto bg-surface/95!',
+          'glass relative w-full rounded-t-2xl md:rounded-2xl p-5 pb-[max(env(safe-area-inset-bottom),1.25rem)] md:pb-5 fade-up max-h-[85vh] overflow-y-auto bg-surface/95!',
           wide ? 'md:max-w-2xl' : 'md:max-w-md'
         )}
         style={{ background: 'color-mix(in srgb, var(--color-surface) 92%, white 3%)' }}
@@ -54,7 +54,9 @@ export function Menu({ button, children, align = 'right' }) {
     if (!open && btnRef.current) {
       const r = btnRef.current.getBoundingClientRect()
       const menuW = 224
-      const left = align === 'right' ? Math.max(8, r.right - menuW) : r.left
+      const rawLeft = align === 'right' ? r.right - menuW : r.left
+      // clamp within the viewport on both edges (important on narrow phones)
+      const left = Math.min(Math.max(8, rawLeft), window.innerWidth - menuW - 8)
       const top = Math.min(r.bottom + 6, window.innerHeight - 60)
       setPos({ top, left })
     }

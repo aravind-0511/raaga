@@ -50,7 +50,7 @@ export default function Focus() {
 
   return (
     <div className="fade-up flex flex-col items-center max-w-2xl mx-auto pt-4 md:pt-10">
-      <div className="flex gap-2 mb-8">
+      <div className="flex flex-wrap justify-center gap-2 mb-8">
         {Object.entries(MODES).map(([key, m]) => (
           <button
             key={key}

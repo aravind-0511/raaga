@@ -1,7 +1,8 @@
-import { Play, Heart, MoreHorizontal, Download, ListPlus, ListEnd, Trash2, Check, Loader2, Plus, HardDriveDownload } from 'lucide-react'
+import { useState } from 'react'
+import { Play, Heart, MoreHorizontal, Download, ListPlus, ListEnd, Trash2, Check, Loader2, Plus, HardDriveDownload, Pencil } from 'lucide-react'
 import { usePlayer } from '../store/playerStore'
 import { useLibrary } from '../store/libraryStore'
-import { Art, Menu, MenuItem } from './ui'
+import { Art, Menu, MenuItem, Modal } from './ui'
 import { cn, formatTime } from '../lib/utils'
 
 export default function TrackRow({ track, context, index, onRemove, showAlbum = true }) {
@@ -14,12 +15,27 @@ export default function TrackRow({ track, context, index, onRemove, showAlbum = 
   const lib = useLibrary.getState()
   const player = usePlayer.getState()
 
+  const [renameOpen, setRenameOpen] = useState(false)
+  const [rTitle, setRTitle] = useState('')
+  const [rArtist, setRArtist] = useState('')
+
+  const openRename = () => {
+    setRTitle(track.title)
+    setRArtist(track.artist)
+    setRenameOpen(true)
+  }
+  const saveRename = () => {
+    lib.renameTrack(track, { title: rTitle, artist: rArtist })
+    setRenameOpen(false)
+  }
+
   const onPlay = () => {
     if (isCurrent) player.toggle()
     else player.playTrack(track, context)
   }
 
   return (
+    <>
     <div
       className={cn(
         'group flex items-center gap-3 px-3 py-2 rounded-xl transition cursor-pointer select-none',
@@ -32,7 +48,7 @@ export default function TrackRow({ track, context, index, onRemove, showAlbum = 
         <div
           className={cn(
             'absolute inset-0 rounded-lg grid place-items-center bg-black/50 transition',
-            isCurrent ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+            isCurrent ? 'opacity-100' : 'opacity-0 md:group-hover:opacity-100'
           )}
         >
           {isCurrent && playing ? (
@@ -64,8 +80,8 @@ export default function TrackRow({ track, context, index, onRemove, showAlbum = 
           lib.toggleLike(track)
         }}
         className={cn(
-          'p-1.5 rounded-full transition',
-          liked ? 'text-accent-hi' : 'text-muted opacity-0 group-hover:opacity-100 hover:text-white'
+          'p-2 rounded-full transition',
+          liked ? 'text-accent-hi' : 'text-muted opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-white'
         )}
       >
         <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
@@ -75,7 +91,7 @@ export default function TrackRow({ track, context, index, onRemove, showAlbum = 
 
       <Menu
         button={
-          <button className="p-1.5 rounded-full text-muted opacity-0 group-hover:opacity-100 hover:text-white transition" onClick={(e) => e.stopPropagation()}>
+          <button className="p-2 rounded-full text-muted opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-white transition" onClick={(e) => e.stopPropagation()}>
             {downloading ? <Loader2 size={16} className="animate-spin opacity-100" /> : <MoreHorizontal size={16} />}
           </button>
         }
@@ -101,6 +117,7 @@ export default function TrackRow({ track, context, index, onRemove, showAlbum = 
           </MenuItem>
         ))}
         <div className="my-1 border-t border-line" />
+        <MenuItem icon={Pencil} onClick={openRename}>Rename</MenuItem>
         {track.source !== 'local' && !track.blobId && (
           <MenuItem icon={Download} onClick={() => lib.downloadForOffline(track)}>Download for offline</MenuItem>
         )}
@@ -113,6 +130,32 @@ export default function TrackRow({ track, context, index, onRemove, showAlbum = 
         )}
       </Menu>
     </div>
+
+    <Modal open={renameOpen} onClose={() => setRenameOpen(false)} title="Rename track">
+      <label className="text-xs text-muted">Title</label>
+      <input
+        value={rTitle}
+        onChange={(e) => setRTitle(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && saveRename()}
+        autoFocus
+        className="w-full rounded-xl bg-white/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 mt-1 mb-3"
+      />
+      <label className="text-xs text-muted">Artist</label>
+      <input
+        value={rArtist}
+        onChange={(e) => setRArtist(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && saveRename()}
+        className="w-full rounded-xl bg-white/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 mt-1"
+      />
+      <button
+        onClick={saveRename}
+        disabled={!rTitle.trim()}
+        className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl bg-accent hover:bg-accent-hi disabled:opacity-40 text-white font-medium py-2.5 transition"
+      >
+        <Check size={15} /> Save
+      </button>
+    </Modal>
+    </>
   )
 }
 

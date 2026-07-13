@@ -1,7 +1,8 @@
-import { ChevronDown, Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, Heart, Download, ListMusic, Check } from 'lucide-react'
+import { ChevronDown, Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, Heart, Download, ListMusic, Check, Users, MonitorSmartphone } from 'lucide-react'
 import { usePlayer } from '../store/playerStore'
 import { useLibrary } from '../store/libraryStore'
-import { Art } from './ui'
+import { useSession } from '../store/sessionStore'
+import { Art, Menu, MenuItem } from './ui'
 import WaveformSeekBar from './WaveformSeekBar'
 import Visualizer from './Visualizer'
 import { cn, formatTime } from '../lib/utils'
@@ -12,6 +13,10 @@ export default function NowPlaying() {
   const liked = useLibrary((s) => (current ? !!s.likes[current.id] : false))
   const downloading = useLibrary((s) => (current ? s.downloadingIds.has(current.id) : false))
   const lib = useLibrary.getState()
+  const peers = useSession((s) => s.peers)
+  const group = useSession((s) => s.group)
+  const session = useSession.getState()
+  const peerList = Object.entries(peers)
 
   if (!nowPlayingOpen || !current) return null
   const RepeatIcon = repeat === 'one' ? Repeat1 : Repeat
@@ -47,7 +52,7 @@ export default function NowPlaying() {
         </button>
       </div>
 
-      <div className="relative flex-1 flex flex-col items-center justify-center px-6 py-6 gap-6 max-w-2xl w-full mx-auto">
+      <div className="relative flex-1 flex flex-col items-center justify-start md:justify-center px-6 py-6 gap-5 md:gap-6 max-w-2xl w-full mx-auto">
         {current.artUrl ? (
           <img
             src={current.artUrl}
@@ -118,6 +123,39 @@ export default function NowPlaying() {
                 <Download size={20} />
               </button>
             ))}
+
+          <Menu
+            align="right"
+            button={
+              <button
+                className={cn('p-2 transition relative', peerList.length ? 'text-accent-hi' : 'text-muted hover:text-white')}
+                title="Play on another device"
+              >
+                <MonitorSmartphone size={20} />
+                {peerList.length > 0 && <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-accent-hi" />}
+              </button>
+            }
+          >
+            <div className="px-3.5 py-2 text-xs text-muted">
+              This device: <span className="text-white/80">{session.deviceName}</span>
+            </div>
+            {peerList.length === 0 && (
+              <div className="px-3.5 py-2 text-xs text-muted">Open Raaga in another tab to see devices.</div>
+            )}
+            {peerList.map(([id, p]) => (
+              <MenuItem key={id} icon={MonitorSmartphone} onClick={() => session.handoffTo(id)}>
+                Play on {p.name}
+              </MenuItem>
+            ))}
+          </Menu>
+
+          <button
+            onClick={() => (group ? session.leaveGroup() : session.startGroup())}
+            className={cn('p-2 transition', group ? 'text-accent-hi' : 'text-muted hover:text-white')}
+            title={group ? 'Leave group session' : 'Start group session'}
+          >
+            <Users size={20} />
+          </button>
         </div>
 
         {current.artUrl && <Visualizer bars={56} height={56} className="opacity-70" />}
