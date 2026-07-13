@@ -74,7 +74,8 @@ export function Menu({ button, children, align = 'right' }) {
 
   return (
     <>
-      <span ref={btnRef} onClick={toggle} className="inline-flex">
+      {/* capture phase: fires before the button's own onClick can stopPropagation() it away */}
+      <span ref={btnRef} onClickCapture={toggle} className="inline-flex">
         {button}
       </span>
       {open &&
