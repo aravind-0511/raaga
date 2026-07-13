@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { UploadCloud, Loader2 } from 'lucide-react'
+import { UploadCloud, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { useLibrary } from '../store/libraryStore'
 import { ACCEPTED_TYPES } from '../lib/metadata'
 import { cn } from '../lib/utils'
@@ -7,13 +7,21 @@ import { cn } from '../lib/utils'
 export default function UploadDropzone({ compact = false }) {
   const inputRef = useRef(null)
   const [dragOver, setDragOver] = useState(false)
+  const [result, setResult] = useState(null) // { added, skipped } — brief confirmation
   const uploading = useLibrary((s) => s.uploading)
   const addFiles = useLibrary((s) => s.addFiles)
+
+  const run = async (fileList) => {
+    setResult(null)
+    const res = await addFiles(fileList)
+    setResult(res)
+    setTimeout(() => setResult(null), 6000)
+  }
 
   const onDrop = (e) => {
     e.preventDefault()
     setDragOver(false)
-    addFiles(e.dataTransfer.files)
+    run(e.dataTransfer.files)
   }
 
   return (
@@ -38,7 +46,7 @@ export default function UploadDropzone({ compact = false }) {
         accept={ACCEPTED_TYPES}
         className="hidden"
         onChange={(e) => {
-          addFiles(e.target.files)
+          run(e.target.files)
           e.target.value = ''
         }}
       />
@@ -46,8 +54,22 @@ export default function UploadDropzone({ compact = false }) {
         <div className="flex flex-col items-center gap-2">
           <Loader2 className="animate-spin text-accent-hi" size={compact ? 20 : 28} />
           <p className="text-sm text-muted">
-            Importing {uploading.done + 1}/{uploading.total}: <span className="text-white/80">{uploading.current}</span>
+            Importing {Math.min(uploading.done + 1, uploading.total)}/{uploading.total}:{' '}
+            <span className="text-white/80">{uploading.current}</span>
           </p>
+        </div>
+      ) : result && (result.added > 0 || result.skipped > 0) ? (
+        <div className="flex flex-col items-center gap-1.5">
+          {result.added > 0 ? (
+            <CheckCircle2 className="text-emerald-400" size={compact ? 20 : 28} />
+          ) : (
+            <AlertTriangle className="text-amber-400" size={compact ? 20 : 28} />
+          )}
+          <p className="text-sm font-medium">
+            {result.added > 0 ? `Added ${result.added} track${result.added > 1 ? 's' : ''}` : 'Nothing added'}
+            {result.skipped > 0 && <span className="text-muted"> · {result.skipped} skipped</span>}
+          </p>
+          <p className="text-xs text-muted">Tap to add more</p>
         </div>
       ) : (
         <div className="flex flex-col items-center gap-2">

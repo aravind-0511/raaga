@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import { Sparkles, History, Clock, Play } from 'lucide-react'
 import { useLibrary, recentTracks } from '../store/libraryStore'
 import { usePlayer } from '../store/playerStore'
-import { Art, SectionTitle, EmptyState } from './../components/ui'
+import { Art, SectionTitle } from './../components/ui'
+import { TrackList } from '../components/TrackRow'
 import UploadDropzone from '../components/UploadDropzone'
 import MoodPromptModal from '../components/MoodPromptModal'
 import { relativeDate } from '../lib/utils'
@@ -49,6 +50,7 @@ export default function Home() {
 
   const recents = useMemo(() => recentTracks(lib, 10), [lib.playEvents, lib.tracks])
   const capsule = useMemo(() => timeCapsule(playEvents, tracks), [playEvents, tracks])
+  const uploads = useMemo(() => tracks.filter((t) => t.source === 'local'), [tracks])
 
   return (
     <div className="fade-up max-w-5xl">
@@ -128,16 +130,25 @@ export default function Home() {
         </>
       )}
 
-      {tracks.length <= 5 && (
-        <>
-          <SectionTitle>Add your music</SectionTitle>
-          <UploadDropzone />
-        </>
+      {/* Uploads — the box stays reachable, and your uploaded tracks show
+          up here so an upload never looks like it did nothing. */}
+      <SectionTitle
+        action={
+          uploads.length > 0 && (
+            <Link to="/library?tab=uploads" className="text-xs text-muted hover:text-white transition">
+              See all in Library
+            </Link>
+          )
+        }
+      >
+        {uploads.length > 0 ? 'Your uploads' : 'Add your music'}
+      </SectionTitle>
+      {uploads.length > 0 && (
+        <div className="mb-4">
+          <TrackList tracks={uploads.slice(0, 8)} />
+        </div>
       )}
-
-      {recents.length === 0 && tracks.length > 5 && (
-        <EmptyState icon={History} title="Nothing played yet" hint="Play something and it'll show up here — plus in your Time Capsule months from now." />
-      )}
+      <UploadDropzone compact={uploads.length > 0} />
 
       <MoodPromptModal open={moodOpen} onClose={() => setMoodOpen(false)} />
     </div>
