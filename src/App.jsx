@@ -30,6 +30,20 @@ export default function App() {
     })
   }, [])
 
+  // Spacebar toggles play/pause (desktop) — ignored while typing in a field or
+  // when a button/link/slider is focused, so it doesn't hijack those controls.
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.code !== 'Space' && e.key !== ' ') return
+      if (e.target.closest('input, textarea, select, [contenteditable], button, a, [role="slider"]')) return
+      if (!usePlayer.getState().current) return
+      e.preventDefault()
+      usePlayer.getState().toggle()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
   if (!ready) {
     return (
       <div className="h-full flex items-center justify-center">
