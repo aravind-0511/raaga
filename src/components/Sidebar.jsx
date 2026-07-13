@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home, Search, Compass, Library, BarChart3, Timer, Settings, Plus, Sparkles, Heart, Users } from 'lucide-react'
+import { Home, Search, Compass, Library, BarChart3, Timer, Settings, Plus, Sparkles, Heart, Users, Sun, Moon } from 'lucide-react'
 import { useLibrary } from '../store/libraryStore'
+import { useSettings } from '../store/settingsStore'
 import { useState } from 'react'
 import { cn } from '../lib/utils'
 import MoodPromptModal from './MoodPromptModal'
@@ -17,6 +18,8 @@ const NAV = [
 
 export default function Sidebar() {
   const playlists = useLibrary((s) => s.playlists)
+  const isLight = useSettings((s) => s.theme === 'light')
+  const toggleTheme = useSettings((s) => s.toggleTheme)
   const navigate = useNavigate()
   const [moodOpen, setMoodOpen] = useState(false)
 
@@ -24,7 +27,14 @@ export default function Sidebar() {
     <aside className="hidden md:flex flex-col w-60 shrink-0 border-r border-line px-3 py-5 gap-1">
       <div className="flex items-center gap-2.5 px-3 mb-5">
         <img src="/favicon.svg" alt="" className="w-8 h-8 rounded-lg accent-glow" />
-        <span className="text-lg font-bold tracking-tight">Raaga</span>
+        <span className="text-lg font-bold tracking-tight flex-1">Raaga</span>
+        <button
+          onClick={toggleTheme}
+          title={isLight ? 'Switch to Espresso (dark)' : 'Switch to Sandalwood (light)'}
+          className="p-1.5 rounded-full text-muted hover:text-ink hover:bg-overlay/8 transition"
+        >
+          {isLight ? <Moon size={15} /> : <Sun size={15} />}
+        </button>
       </div>
 
       {NAV.map(({ to, label, icon: Icon }) => (
@@ -34,7 +44,7 @@ export default function Sidebar() {
           className={({ isActive }) =>
             cn(
               'flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition',
-              isActive ? 'bg-white/8 text-white' : 'text-muted hover:text-white hover:bg-white/5'
+              isActive ? 'bg-overlay/8 text-ink' : 'text-muted hover:text-ink hover:bg-overlay/5'
             )
           }
         >
@@ -49,7 +59,7 @@ export default function Sidebar() {
           <button
             title="Mood playlist"
             onClick={() => setMoodOpen(true)}
-            className="p-1 rounded-md text-muted hover:text-accent-hi hover:bg-white/5 transition"
+            className="p-1 rounded-md text-muted hover:text-accent-hi hover:bg-overlay/5 transition"
           >
             <Sparkles size={14} />
           </button>
@@ -59,7 +69,7 @@ export default function Sidebar() {
               const pl = await useLibrary.getState().createPlaylist({ name: 'New Playlist' })
               navigate(`/playlist/${pl.id}`)
             }}
-            className="p-1 rounded-md text-muted hover:text-white hover:bg-white/5 transition"
+            className="p-1 rounded-md text-muted hover:text-ink hover:bg-overlay/5 transition"
           >
             <Plus size={14} />
           </button>
@@ -68,7 +78,7 @@ export default function Sidebar() {
 
       <NavLink
         to="/library?tab=liked"
-        className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm text-muted hover:text-white hover:bg-white/5 transition"
+        className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm text-muted hover:text-ink hover:bg-overlay/5 transition"
       >
         <span className="w-7 h-7 rounded-md grid place-items-center bg-gradient-to-br from-accent to-accent-hi/60">
           <Heart size={13} fill="white" className="text-white" />
@@ -84,7 +94,7 @@ export default function Sidebar() {
             className={({ isActive }) =>
               cn(
                 'flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition',
-                isActive ? 'text-white bg-white/5' : 'text-muted hover:text-white hover:bg-white/5'
+                isActive ? 'text-ink bg-overlay/5' : 'text-muted hover:text-ink hover:bg-overlay/5'
               )
             }
           >
@@ -100,7 +110,7 @@ export default function Sidebar() {
         className={({ isActive }) =>
           cn(
             'flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition',
-            isActive ? 'bg-white/8 text-white' : 'text-muted hover:text-white hover:bg-white/5'
+            isActive ? 'bg-overlay/8 text-ink' : 'text-muted hover:text-ink hover:bg-overlay/5'
           )
         }
       >

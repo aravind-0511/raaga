@@ -117,7 +117,7 @@ export default function PlaylistDetail() {
             {items.length > 0 && (
               <button
                 onClick={() => player.playTrack(items[0], items)}
-                className="flex items-center gap-1.5 text-sm bg-accent hover:bg-accent-hi rounded-full px-5 py-2 font-medium transition"
+                className="flex items-center gap-1.5 text-sm bg-accent hover:bg-accent-hi text-white rounded-full px-5 py-2 font-medium transition"
               >
                 <Play size={14} fill="currentColor" /> Play
               </button>
@@ -128,7 +128,7 @@ export default function PlaylistDetail() {
                 setDescription(playlist.description || '')
                 setEditOpen(true)
               }}
-              className="p-2.5 rounded-full bg-white/6 hover:bg-white/12 text-muted hover:text-white transition"
+              className="p-2.5 rounded-full bg-overlay/6 hover:bg-overlay/12 text-muted hover:text-ink transition"
               title="Edit details"
             >
               <Pencil size={15} />
@@ -137,7 +137,7 @@ export default function PlaylistDetail() {
               onClick={() => lib.updatePlaylist(id, { collaborative: !playlist.collaborative })}
               className={cn(
                 'p-2.5 rounded-full transition',
-                playlist.collaborative ? 'bg-accent/25 text-accent-hi' : 'bg-white/6 text-muted hover:text-white hover:bg-white/12'
+                playlist.collaborative ? 'bg-accent/25 text-accent-hi' : 'bg-overlay/6 text-muted hover:text-ink hover:bg-overlay/12'
               )}
               title={playlist.collaborative ? 'Make private' : 'Make collaborative (live co-editing across tabs)'}
             >
@@ -148,7 +148,7 @@ export default function PlaylistDetail() {
                 await lib.removePlaylist(id)
                 navigate('/library')
               }}
-              className="p-2.5 rounded-full bg-white/6 hover:bg-rose-500/20 text-muted hover:text-rose-300 transition"
+              className="p-2.5 rounded-full bg-overlay/6 hover:bg-rose-500/20 text-muted hover:text-rose-300 transition"
               title="Delete playlist"
             >
               <Trash2 size={15} />
@@ -186,7 +186,7 @@ export default function PlaylistDetail() {
               <button
                 onClick={() => reorder(i, i - 1)}
                 disabled={i === 0}
-                className="p-0.5 text-muted disabled:opacity-25 active:text-white"
+                className="p-0.5 text-muted disabled:opacity-25 active:text-ink"
                 title="Move up"
               >
                 <ChevronUp size={16} />
@@ -194,7 +194,7 @@ export default function PlaylistDetail() {
               <button
                 onClick={() => reorder(i, i + 1)}
                 disabled={i === items.length - 1}
-                className="p-0.5 text-muted disabled:opacity-25 active:text-white"
+                className="p-0.5 text-muted disabled:opacity-25 active:text-ink"
                 title="Move down"
               >
                 <ChevronDown size={16} />
@@ -217,14 +217,14 @@ export default function PlaylistDetail() {
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-xl bg-white/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 mt-1 mb-3"
+          className="w-full rounded-xl bg-overlay/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 mt-1 mb-3"
         />
         <label className="text-xs text-muted">Description</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
-          className="w-full rounded-xl bg-white/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 mt-1 resize-none"
+          className="w-full rounded-xl bg-overlay/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 mt-1 resize-none"
         />
         <button
           onClick={() => {

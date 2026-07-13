@@ -72,7 +72,7 @@ export default function Search() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Songs, artists, albums — try “Ilaiyaraaja” or “Vaathi Coming”"
-            className="w-full rounded-full bg-white/6 border border-line pl-11 pr-10 py-3 text-sm outline-none focus:border-accent-hi/60 transition"
+            className="w-full rounded-full bg-overlay/6 border border-line pl-11 pr-10 py-3 text-sm outline-none focus:border-accent-hi/60 transition"
           />
           {busy && <Loader2 size={16} className="animate-spin absolute right-4 top-1/2 -translate-y-1/2 text-muted" />}
         </div>
@@ -129,7 +129,7 @@ export default function Search() {
               <button
                 key={a.id}
                 onClick={() => playCollection(() => getAlbumSongs(a.id))}
-                className="glass rounded-xl p-3 text-left hover:bg-white/8 transition"
+                className="glass rounded-xl p-3 text-left hover:bg-overlay/8 transition"
               >
                 <Art src={a.artUrl} size="w-full aspect-square h-auto" rounded="rounded-lg" iconSize={24} className="mb-2" />
                 <p className="text-xs font-medium line-clamp-1">{a.name}</p>

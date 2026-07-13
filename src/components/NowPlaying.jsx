@@ -36,7 +36,7 @@ export default function NowPlaying() {
       <div className="relative flex items-center justify-between px-5 pt-5 md:px-10">
         <button
           onClick={() => player.setNowPlayingOpen(false)}
-          className="p-2 rounded-full hover:bg-white/10 text-muted hover:text-white transition"
+          className="p-2 rounded-full hover:bg-overlay/10 text-muted hover:text-ink transition"
         >
           <ChevronDown size={22} />
         </button>
@@ -46,7 +46,7 @@ export default function NowPlaying() {
             player.setNowPlayingOpen(false)
             player.setQueueOpen(true)
           }}
-          className="p-2 rounded-full hover:bg-white/10 text-muted hover:text-white transition"
+          className="p-2 rounded-full hover:bg-overlay/10 text-muted hover:text-ink transition"
         >
           <ListMusic size={20} />
         </button>
@@ -82,22 +82,22 @@ export default function NowPlaying() {
         </div>
 
         <div className="flex items-center gap-6 md:gap-8">
-          <button onClick={player.toggleShuffle} className={cn('p-2 transition', shuffle ? 'text-accent-hi' : 'text-muted hover:text-white')}>
+          <button onClick={player.toggleShuffle} className={cn('p-2 transition', shuffle ? 'text-accent-hi' : 'text-muted hover:text-ink')}>
             <Shuffle size={20} />
           </button>
-          <button onClick={player.prev} className="p-2 text-white/85 hover:text-white transition">
+          <button onClick={player.prev} className="p-2 text-ink/85 hover:text-ink transition">
             <SkipBack size={26} fill="currentColor" />
           </button>
           <button
             onClick={player.toggle}
-            className="w-16 h-16 rounded-full bg-white text-black grid place-items-center hover:scale-105 transition shadow-xl"
+            className="w-16 h-16 rounded-full bg-ink text-bg grid place-items-center hover:scale-105 transition shadow-xl"
           >
             {playing ? <Pause size={26} fill="currentColor" /> : <Play size={26} fill="currentColor" className="ml-1" />}
           </button>
-          <button onClick={() => player.next()} className="p-2 text-white/85 hover:text-white transition">
+          <button onClick={() => player.next()} className="p-2 text-ink/85 hover:text-ink transition">
             <SkipForward size={26} fill="currentColor" />
           </button>
-          <button onClick={player.cycleRepeat} className={cn('p-2 transition', repeat !== 'off' ? 'text-accent-hi' : 'text-muted hover:text-white')}>
+          <button onClick={player.cycleRepeat} className={cn('p-2 transition', repeat !== 'off' ? 'text-accent-hi' : 'text-muted hover:text-ink')}>
             <RepeatIcon size={20} />
           </button>
         </div>
@@ -105,7 +105,7 @@ export default function NowPlaying() {
         <div className="flex items-center gap-5">
           <button
             onClick={() => lib.toggleLike(current)}
-            className={cn('p-2 transition', liked ? 'text-accent-hi' : 'text-muted hover:text-white')}
+            className={cn('p-2 transition', liked ? 'text-accent-hi' : 'text-muted hover:text-ink')}
           >
             <Heart size={20} fill={liked ? 'currentColor' : 'none'} />
           </button>
@@ -117,7 +117,7 @@ export default function NowPlaying() {
             ) : (
               <button
                 onClick={() => lib.downloadForOffline(current)}
-                className={cn('p-2 transition text-muted hover:text-white', downloading && 'animate-pulse text-accent-hi')}
+                className={cn('p-2 transition text-muted hover:text-ink', downloading && 'animate-pulse text-accent-hi')}
                 title="Download for offline"
               >
                 <Download size={20} />
@@ -128,7 +128,7 @@ export default function NowPlaying() {
             align="right"
             button={
               <button
-                className={cn('p-2 transition relative', peerList.length ? 'text-accent-hi' : 'text-muted hover:text-white')}
+                className={cn('p-2 transition relative', peerList.length ? 'text-accent-hi' : 'text-muted hover:text-ink')}
                 title="Play on another device"
               >
                 <MonitorSmartphone size={20} />
@@ -137,7 +137,7 @@ export default function NowPlaying() {
             }
           >
             <div className="px-3.5 py-2 text-xs text-muted">
-              This device: <span className="text-white/80">{session.deviceName}</span>
+              This device: <span className="text-ink/80">{session.deviceName}</span>
             </div>
             {peerList.length === 0 && (
               <div className="px-3.5 py-2 text-xs text-muted">Open Raaga in another tab to see devices.</div>
@@ -151,7 +151,7 @@ export default function NowPlaying() {
 
           <button
             onClick={() => (group ? session.leaveGroup() : session.startGroup())}
-            className={cn('p-2 transition', group ? 'text-accent-hi' : 'text-muted hover:text-white')}
+            className={cn('p-2 transition', group ? 'text-accent-hi' : 'text-muted hover:text-ink')}
             title={group ? 'Leave group session' : 'Start group session'}
           >
             <Users size={20} />
@@ -163,11 +163,11 @@ export default function NowPlaying() {
         {upNext && (
           <button
             onClick={() => player.next()}
-            className="glass flex items-center gap-3 rounded-full pl-2 pr-4 py-1.5 text-left hover:bg-white/10 transition"
+            className="glass flex items-center gap-3 rounded-full pl-2 pr-4 py-1.5 text-left hover:bg-overlay/10 transition"
           >
             <Art src={upNext.artUrl} size="w-8 h-8" rounded="rounded-full" iconSize={13} />
             <span className="text-xs text-muted">
-              Up next: <span className="text-white/85">{upNext.title}</span>
+              Up next: <span className="text-ink/85">{upNext.title}</span>
             </span>
           </button>
         )}

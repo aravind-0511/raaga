@@ -62,7 +62,7 @@ export default function Library() {
             onClick={() => setParams({ tab: id })}
             className={cn(
               'flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition',
-              tab === id ? 'bg-white text-black' : 'bg-white/6 text-muted hover:text-white'
+              tab === id ? 'bg-ink text-bg' : 'bg-overlay/6 text-muted hover:text-ink'
             )}
           >
             <Icon size={14} />
@@ -78,13 +78,13 @@ export default function Library() {
               const pl = await lib.createPlaylist({ name: 'New Playlist' })
               navigate(`/playlist/${pl.id}`)
             }}
-            className="glass rounded-2xl p-4 flex flex-col items-center justify-center gap-2 min-h-44 border-2 border-dashed border-white/15 hover:border-white/30 text-muted hover:text-white transition"
+            className="glass rounded-2xl p-4 flex flex-col items-center justify-center gap-2 min-h-44 border-2 border-dashed border-overlay/15 hover:border-overlay/30 text-muted hover:text-ink transition"
           >
             <Plus size={22} />
             <span className="text-sm font-medium">New playlist</span>
           </button>
           {lib.playlists.map((pl) => (
-            <Link key={pl.id} to={`/playlist/${pl.id}`} className="glass rounded-2xl p-4 hover:bg-white/8 transition group">
+            <Link key={pl.id} to={`/playlist/${pl.id}`} className="glass rounded-2xl p-4 hover:bg-overlay/8 transition group">
               <Art src={pl.coverUrl} size="w-full aspect-square h-auto" rounded="rounded-xl" iconSize={28} className="mb-3" />
               <p className="font-medium text-sm line-clamp-1 flex items-center gap-1.5">
                 {pl.name}
@@ -101,7 +101,7 @@ export default function Library() {
           <>
             <button
               onClick={() => player.playTrack(liked[0], liked)}
-              className="flex items-center gap-1.5 text-sm bg-accent hover:bg-accent-hi rounded-full px-4 py-1.5 font-medium transition mb-4"
+              className="flex items-center gap-1.5 text-sm bg-accent hover:bg-accent-hi text-white rounded-full px-4 py-1.5 font-medium transition mb-4"
             >
               <Play size={13} fill="currentColor" /> Play all
             </button>
@@ -134,7 +134,7 @@ export default function Library() {
         (albums.length ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {albums.map((a) => (
-              <button key={a.name} onClick={() => player.playTrack(a.tracks[0], a.tracks)} className="glass rounded-xl p-3 text-left hover:bg-white/8 transition">
+              <button key={a.name} onClick={() => player.playTrack(a.tracks[0], a.tracks)} className="glass rounded-xl p-3 text-left hover:bg-overlay/8 transition">
                 <Art src={a.artUrl} size="w-full aspect-square h-auto" rounded="rounded-lg" iconSize={24} className="mb-2" />
                 <p className="text-xs font-medium line-clamp-1">{a.name}</p>
                 <p className="text-[10px] text-muted line-clamp-1">{a.tracks.length} tracks</p>

@@ -36,7 +36,7 @@ export default function UploadDropzone({ compact = false }) {
       className={cn(
         'glass rounded-2xl border-2 border-dashed cursor-pointer transition text-center',
         compact ? 'p-4' : 'p-10',
-        dragOver ? 'border-accent-hi bg-white/8' : 'border-white/15 hover:border-white/30'
+        dragOver ? 'border-accent-hi bg-overlay/8' : 'border-overlay/15 hover:border-overlay/30'
       )}
     >
       <input
@@ -55,7 +55,7 @@ export default function UploadDropzone({ compact = false }) {
           <Loader2 className="animate-spin text-accent-hi" size={compact ? 20 : 28} />
           <p className="text-sm text-muted">
             Importing {Math.min(uploading.done + 1, uploading.total)}/{uploading.total}:{' '}
-            <span className="text-white/80">{uploading.current}</span>
+            <span className="text-ink/80">{uploading.current}</span>
           </p>
         </div>
       ) : result && (result.added > 0 || result.skipped > 0) ? (

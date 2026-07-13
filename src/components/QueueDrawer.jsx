@@ -28,7 +28,7 @@ export default function QueueDrawer() {
           <h3 className="font-semibold text-sm">Queue</h3>
           <button
             onClick={() => player.setQueueOpen(false)}
-            className="p-2 rounded-full hover:bg-white/10 text-muted hover:text-white transition"
+            className="p-2 rounded-full hover:bg-overlay/10 text-muted hover:text-ink transition"
           >
             <X size={16} />
           </button>
@@ -41,7 +41,7 @@ export default function QueueDrawer() {
               onClick={() => player.playAt(i)}
               className={cn(
                 'group flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition',
-                i === index ? 'bg-white/8' : 'hover:bg-white/5',
+                i === index ? 'bg-overlay/8' : 'hover:bg-overlay/5',
                 i < index && 'opacity-50'
               )}
             >
@@ -57,7 +57,7 @@ export default function QueueDrawer() {
                     e.stopPropagation()
                     player.removeFromQueue(i)
                   }}
-                  className="p-1.5 rounded text-muted opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-white transition"
+                  className="p-1.5 rounded text-muted opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-ink transition"
                 >
                   <X size={14} />
                 </button>

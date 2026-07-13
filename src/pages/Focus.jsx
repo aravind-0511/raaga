@@ -61,7 +61,7 @@ export default function Focus() {
             }}
             className={cn(
               'flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition',
-              mode === key ? 'bg-white text-black' : 'bg-white/6 text-muted hover:text-white'
+              mode === key ? 'bg-ink text-bg' : 'bg-overlay/6 text-muted hover:text-ink'
             )}
           >
             <m.icon size={14} />
@@ -73,7 +73,7 @@ export default function Focus() {
 
       <div className="relative w-72 h-72 grid place-items-center">
         <svg className="absolute inset-0 -rotate-90" viewBox="0 0 240 240">
-          <circle cx="120" cy="120" r={R} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
+          <circle cx="120" cy="120" r={R} fill="none" style={{ stroke: 'color-mix(in srgb, var(--color-overlay) 10%, transparent)' }} strokeWidth="6" />
           <circle
             cx="120" cy="120" r={R} fill="none"
             stroke="var(--accent-hi)" strokeWidth="6" strokeLinecap="round"
@@ -90,7 +90,7 @@ export default function Focus() {
       <div className="flex items-center gap-3 mt-8">
         <button
           onClick={() => setRunning(!running)}
-          className="flex items-center gap-2 bg-accent hover:bg-accent-hi rounded-full px-7 py-2.5 font-medium transition"
+          className="flex items-center gap-2 bg-accent hover:bg-accent-hi text-white rounded-full px-7 py-2.5 font-medium transition"
         >
           {running ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" />}
           {running ? 'Pause' : 'Start'}
@@ -100,7 +100,7 @@ export default function Focus() {
             setSecondsLeft(total)
             setRunning(false)
           }}
-          className="p-3 rounded-full bg-white/6 hover:bg-white/12 text-muted hover:text-white transition"
+          className="p-3 rounded-full bg-overlay/6 hover:bg-overlay/12 text-muted hover:text-ink transition"
           title="Reset"
         >
           <RotateCcw size={16} />
@@ -115,10 +115,10 @@ export default function Focus() {
               <p className="text-sm font-medium line-clamp-1">{current.title}</p>
               <p className="text-xs text-muted line-clamp-1">{current.artist}</p>
             </div>
-            <button onClick={player.toggle} className="w-10 h-10 rounded-full bg-white text-black grid place-items-center hover:scale-105 transition">
+            <button onClick={player.toggle} className="w-10 h-10 rounded-full bg-ink text-bg grid place-items-center hover:scale-105 transition">
               {playing ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
             </button>
-            <button onClick={() => player.next()} className="p-2 text-muted hover:text-white transition">
+            <button onClick={() => player.next()} className="p-2 text-muted hover:text-ink transition">
               <SkipForward size={18} fill="currentColor" />
             </button>
           </div>

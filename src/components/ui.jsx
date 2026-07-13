@@ -24,14 +24,14 @@ export function Modal({ open, onClose, title, children, wide = false }) {
       <div
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          'glass relative w-full rounded-t-2xl md:rounded-2xl p-5 pb-[max(env(safe-area-inset-bottom),1.25rem)] md:pb-5 fade-up max-h-[85vh] overflow-y-auto bg-surface/95!',
+          'glass relative w-full rounded-t-2xl md:rounded-2xl p-5 pb-[max(env(safe-area-inset-bottom),1.25rem)] md:pb-5 fade-up max-h-[85vh] overflow-y-auto bg-surface/95! text-ink',
           wide ? 'md:max-w-2xl' : 'md:max-w-md'
         )}
-        style={{ background: 'color-mix(in srgb, var(--color-surface) 92%, white 3%)' }}
+        style={{ background: 'color-mix(in srgb, var(--color-surface) 92%, var(--color-ink) 3%)' }}
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">{title}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-white/10 text-muted hover:text-white transition">
+          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-overlay/10 text-muted hover:text-ink transition">
             <X size={18} />
           </button>
         </div>
@@ -83,8 +83,8 @@ export function Menu({ button, children, align = 'right' }) {
       {open &&
         createPortal(
           <div
-            className="glass fixed z-50 w-56 rounded-xl py-1.5 shadow-2xl fade-up max-h-80 overflow-y-auto"
-            style={{ top: pos.top, left: pos.left, background: 'color-mix(in srgb, var(--color-surface-2) 94%, white 3%)' }}
+            className="glass fixed z-50 w-56 rounded-xl py-1.5 shadow-2xl fade-up max-h-80 overflow-y-auto text-ink"
+            style={{ top: pos.top, left: pos.left, background: 'color-mix(in srgb, var(--color-surface-2) 94%, var(--color-ink) 3%)' }}
             onClick={(e) => {
               e.stopPropagation()
               setOpen(false)
@@ -103,8 +103,8 @@ export function MenuItem({ icon: Icon, children, onClick, danger = false }) {
     <button
       onClick={onClick}
       className={cn(
-        'w-full flex items-center gap-3 px-3.5 py-2 text-sm text-left transition hover:bg-white/8',
-        danger ? 'text-rose-400' : 'text-white/85'
+        'w-full flex items-center gap-3 px-3.5 py-2 text-sm text-left transition hover:bg-overlay/8',
+        danger ? 'text-rose-400' : 'text-ink/85'
       )}
     >
       {Icon && <Icon size={15} className="shrink-0 opacity-70" />}

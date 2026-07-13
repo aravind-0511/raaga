@@ -3,10 +3,15 @@ import { getAllSettings, putSetting } from '../lib/repo'
 import { setCatalogBase, DEFAULT_CATALOG_URL } from '../lib/catalog/saavn'
 import { engine } from '../lib/player/engine'
 
+// Each theme mode has a signature accent, applied automatically when the
+// mode is toggled (still overridable afterward from the accent swatches).
+const THEME_ACCENT = { dark: 'copper', light: 'terracotta' }
+
 const DEFAULTS = {
+  theme: 'dark', // dark (Espresso) | light (Sandalwood)
   quality: 'high', // normal | high | vhigh
   crossfade: 0, // seconds, 0-12
-  accent: 'violet', // violet | amber | rose | cyan
+  accent: 'copper', // copper | terracotta | violet | amber | rose | cyan
   catalogUrl: DEFAULT_CATALOG_URL,
   volume: 1,
   gapless: true,
@@ -14,6 +19,7 @@ const DEFAULTS = {
 
 function applySideEffects(state) {
   document.documentElement.dataset.accent = state.accent
+  document.documentElement.dataset.theme = state.theme
   setCatalogBase(state.catalogUrl)
   engine.setVolume(state.volume)
 }
@@ -33,6 +39,16 @@ export const useSettings = create((set, get) => ({
     set({ [key]: value })
     applySideEffects(get())
     putSetting(key, value)
+  },
+
+  // Flip theme mode and pair it with that theme's signature accent.
+  toggleTheme: () => {
+    const nextTheme = get().theme === 'dark' ? 'light' : 'dark'
+    const nextAccent = THEME_ACCENT[nextTheme]
+    set({ theme: nextTheme, accent: nextAccent })
+    applySideEffects(get())
+    putSetting('theme', nextTheme)
+    putSetting('accent', nextAccent)
   },
 }))
 

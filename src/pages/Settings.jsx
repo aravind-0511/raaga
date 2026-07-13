@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Volume2, Palette, Waves, Globe, MonitorSmartphone, Check, RotateCcw } from 'lucide-react'
+import { Volume2, Palette, Waves, Globe, MonitorSmartphone, Check, RotateCcw, Sun, Moon } from 'lucide-react'
 import { useSettings } from '../store/settingsStore'
 import { useSession } from '../store/sessionStore'
 import { DEFAULT_CATALOG_URL } from '../lib/catalog/saavn'
@@ -12,6 +12,8 @@ const QUALITIES = [
 ]
 
 const ACCENTS = [
+  { id: 'copper', color: '#e0a05c', label: 'Copper' },
+  { id: 'terracotta', color: '#c15a3e', label: 'Terracotta' },
   { id: 'violet', color: '#a78bfa', label: 'Electric Violet' },
   { id: 'amber', color: '#fbbf24', label: 'Amber' },
   { id: 'rose', color: '#fb7185', label: 'Rose' },
@@ -35,20 +37,43 @@ export default function Settings() {
   const session = useSession.getState()
   const peers = useSession((s) => s.peers)
   const [urlDraft, setUrlDraft] = useState(settings.catalogUrl)
+  const isLight = settings.theme === 'light'
 
   return (
     <div className="fade-up max-w-2xl">
       <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Settings</h1>
 
+      <Section
+        icon={isLight ? Sun : Moon}
+        title="Appearance"
+        hint={isLight ? 'Sandalwood — warm cream with a red-brown accent.' : 'Espresso — warm brown-black with a copper accent.'}
+      >
+        <button
+          onClick={settings.toggleTheme}
+          className="relative w-full flex items-center rounded-2xl border border-line p-1 bg-overlay/4"
+        >
+          <span
+            className="absolute top-1 bottom-1 w-1/2 rounded-xl bg-accent transition-all duration-300"
+            style={{ left: isLight ? '50%' : '0.25rem', width: 'calc(50% - 0.25rem)' }}
+          />
+          <span className={cn('relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors', !isLight ? 'text-white' : 'text-muted')}>
+            <Moon size={15} /> Espresso
+          </span>
+          <span className={cn('relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors', isLight ? 'text-white' : 'text-muted')}>
+            <Sun size={15} /> Sandalwood
+          </span>
+        </button>
+      </Section>
+
       <Section icon={Volume2} title="Audio quality" hint="Applies to catalog streaming. Your own uploaded files always play at original quality.">
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           {QUALITIES.map((q) => (
             <button
               key={q.id}
               onClick={() => settings.setSetting('quality', q.id)}
               className={cn(
                 'rounded-xl p-3 text-left border transition',
-                settings.quality === q.id ? 'border-accent-hi bg-accent/15' : 'border-line bg-white/4 hover:bg-white/8'
+                settings.quality === q.id ? 'border-accent-hi bg-accent/15' : 'border-line bg-overlay/4 hover:bg-overlay/8'
               )}
             >
               <p className="text-sm font-medium flex items-center gap-1.5">
@@ -88,8 +113,8 @@ export default function Settings() {
         </label>
       </Section>
 
-      <Section icon={Palette} title="Accent color">
-        <div className="flex gap-3">
+      <Section icon={Palette} title="Accent color" hint="Switching the theme above picks a matching accent automatically — fine-tune it here if you'd like something different.">
+        <div className="flex flex-wrap gap-3">
           {ACCENTS.map((a) => (
             <button
               key={a.id}
@@ -97,7 +122,7 @@ export default function Settings() {
               onClick={() => settings.setSetting('accent', a.id)}
               className={cn(
                 'w-10 h-10 rounded-full grid place-items-center transition hover:scale-110',
-                settings.accent === a.id && 'ring-2 ring-white ring-offset-2 ring-offset-bg'
+                settings.accent === a.id && 'ring-2 ring-ink ring-offset-2 ring-offset-bg'
               )}
               style={{ background: a.color }}
             >
@@ -117,11 +142,11 @@ export default function Settings() {
             value={urlDraft}
             onChange={(e) => setUrlDraft(e.target.value)}
             spellCheck={false}
-            className="flex-1 rounded-xl bg-white/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 font-mono"
+            className="flex-1 rounded-xl bg-overlay/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 font-mono"
           />
           <button
             onClick={() => settings.setSetting('catalogUrl', urlDraft.trim() || DEFAULT_CATALOG_URL)}
-            className="rounded-xl bg-accent hover:bg-accent-hi px-4 text-sm font-medium transition"
+            className="rounded-xl bg-accent hover:bg-accent-hi px-4 text-sm font-medium text-white transition"
           >
             Save
           </button>
@@ -130,7 +155,7 @@ export default function Settings() {
               setUrlDraft(DEFAULT_CATALOG_URL)
               settings.setSetting('catalogUrl', DEFAULT_CATALOG_URL)
             }}
-            className="rounded-xl bg-white/6 hover:bg-white/12 px-3 text-muted hover:text-white transition"
+            className="rounded-xl bg-overlay/6 hover:bg-overlay/12 px-3 text-muted hover:text-ink transition"
             title="Reset to default"
           >
             <RotateCcw size={15} />

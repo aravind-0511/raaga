@@ -23,7 +23,7 @@ export default function GroupSessionPanel() {
     return (
       <div
         className="fixed bottom-32 md:bottom-24 inset-x-4 md:inset-x-auto md:right-4 z-40 glass rounded-2xl p-4 md:w-72 fade-up"
-        style={{ background: 'color-mix(in srgb, var(--color-surface-2) 92%, white 3%)' }}
+        style={{ background: 'color-mix(in srgb, var(--color-surface-2) 92%, var(--color-ink) 3%)' }}
       >
         <p className="text-sm font-medium flex items-center gap-2">
           <Users size={15} className="text-accent-hi" /> Group session live
@@ -31,7 +31,7 @@ export default function GroupSessionPanel() {
         <p className="text-xs text-muted mt-1">{availableGroup.hostName} is listening — join to sync playback and chat.</p>
         <button
           onClick={session.joinGroup}
-          className="mt-3 w-full rounded-lg bg-accent hover:bg-accent-hi text-sm font-medium py-2 transition"
+          className="mt-3 w-full rounded-lg bg-accent hover:bg-accent-hi text-sm font-medium text-white py-2 transition"
         >
           Join session
         </button>
@@ -49,7 +49,7 @@ export default function GroupSessionPanel() {
         <button
           onClick={() => setMinimized(false)}
           className="md:hidden fixed bottom-32 right-4 z-40 glass rounded-full pl-3 pr-4 py-2 flex items-center gap-2 text-sm fade-up"
-          style={{ background: 'color-mix(in srgb, var(--color-surface-2) 92%, white 3%)' }}
+          style={{ background: 'color-mix(in srgb, var(--color-surface-2) 92%, var(--color-ink) 3%)' }}
         >
           <Users size={15} className="text-accent-hi" /> Group · {memberCount}
         </button>
@@ -82,14 +82,14 @@ export default function GroupSessionPanel() {
           <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={() => setMinimized(true)}
-              className="md:hidden p-2 rounded-full hover:bg-white/10 text-muted hover:text-white transition"
+              className="md:hidden p-2 rounded-full hover:bg-overlay/10 text-muted hover:text-ink transition"
               title="Minimize"
             >
               <ChevronDown size={16} />
             </button>
             <button
               onClick={session.leaveGroup}
-              className="p-2 rounded-full hover:bg-white/10 text-muted hover:text-white transition"
+              className="p-2 rounded-full hover:bg-overlay/10 text-muted hover:text-ink transition"
               title="Leave session"
             >
               <X size={16} />
@@ -113,7 +113,7 @@ export default function GroupSessionPanel() {
                 {m.from}
                 {m.from === group.hostName && <Crown size={10} className="inline ml-1 -mt-0.5" />}
               </span>
-              <p className="text-white/85 text-[13px] leading-snug">{m.text}</p>
+              <p className="text-ink/85 text-[13px] leading-snug">{m.text}</p>
             </div>
           ))}
           <div ref={chatEnd} />
@@ -131,9 +131,9 @@ export default function GroupSessionPanel() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Message…"
-            className="flex-1 rounded-full bg-white/5 border border-line px-3.5 py-2 text-sm outline-none focus:border-accent-hi/60"
+            className="flex-1 rounded-full bg-overlay/5 border border-line px-3.5 py-2 text-sm outline-none focus:border-accent-hi/60"
           />
-          <button type="submit" className="p-2.5 rounded-full bg-accent hover:bg-accent-hi transition">
+          <button type="submit" className="p-2.5 rounded-full bg-accent hover:bg-accent-hi text-white transition">
             <Send size={14} />
           </button>
         </form>

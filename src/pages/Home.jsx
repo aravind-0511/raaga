@@ -60,13 +60,13 @@ export default function Home() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
         <button
           onClick={() => setMoodOpen(true)}
-          className="glass rounded-2xl p-5 text-left hover:bg-white/8 transition group"
+          className="glass rounded-2xl p-5 text-left hover:bg-overlay/8 transition group"
         >
           <Sparkles className="text-accent-hi mb-3 group-hover:scale-110 transition" size={22} />
           <p className="font-semibold">Mood playlist</p>
           <p className="text-xs text-muted mt-0.5">Describe a vibe, get a playlist</p>
         </button>
-        <Link to="/focus" className="glass rounded-2xl p-5 hover:bg-white/8 transition group">
+        <Link to="/focus" className="glass rounded-2xl p-5 hover:bg-overlay/8 transition group">
           <Clock className="text-accent-hi mb-3 group-hover:scale-110 transition" size={22} />
           <p className="font-semibold">Focus session</p>
           <p className="text-xs text-muted mt-0.5">Distraction-free player + pomodoro</p>
@@ -81,7 +81,7 @@ export default function Home() {
               <button
                 key={track.id}
                 onClick={() => player.playTrack(track, recents.map((r) => r.track))}
-                className="glass rounded-xl p-3 text-left hover:bg-white/8 transition group"
+                className="glass rounded-xl p-3 text-left hover:bg-overlay/8 transition group"
               >
                 <div className="relative mb-2.5">
                   <Art src={track.artUrl} size="w-full aspect-square h-auto" rounded="rounded-lg" iconSize={28} />
@@ -118,7 +118,7 @@ export default function Home() {
                   <button
                     key={t.id}
                     onClick={() => player.playTrack(t, g.items)}
-                    className="flex items-center gap-2 rounded-full bg-white/5 hover:bg-white/10 pl-1 pr-3 py-1 transition"
+                    className="flex items-center gap-2 rounded-full bg-overlay/5 hover:bg-overlay/10 pl-1 pr-3 py-1 transition"
                   >
                     <Art src={t.artUrl} size="w-6 h-6" rounded="rounded-full" iconSize={11} />
                     <span className="text-xs line-clamp-1 max-w-40">{t.title}</span>
@@ -135,7 +135,7 @@ export default function Home() {
       <SectionTitle
         action={
           uploads.length > 0 && (
-            <Link to="/library?tab=uploads" className="text-xs text-muted hover:text-white transition">
+            <Link to="/library?tab=uploads" className="text-xs text-muted hover:text-ink transition">
               See all in Library
             </Link>
           )

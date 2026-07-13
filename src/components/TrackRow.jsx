@@ -39,7 +39,7 @@ export default function TrackRow({ track, context, index, onRemove, showAlbum = 
     <div
       className={cn(
         'group flex items-center gap-3 px-3 py-2 rounded-xl transition cursor-pointer select-none',
-        isCurrent ? 'bg-white/8' : 'hover:bg-white/5'
+        isCurrent ? 'bg-overlay/8' : 'hover:bg-overlay/5'
       )}
       onDoubleClick={onPlay}
     >
@@ -72,7 +72,7 @@ export default function TrackRow({ track, context, index, onRemove, showAlbum = 
         </p>
       </div>
 
-      {track.genre && <span className="hidden lg:block text-[11px] text-muted px-2 py-0.5 rounded-full bg-white/5">{track.genre}</span>}
+      {track.genre && <span className="hidden lg:block text-[11px] text-muted px-2 py-0.5 rounded-full bg-overlay/5">{track.genre}</span>}
 
       <button
         onClick={(e) => {
@@ -81,7 +81,7 @@ export default function TrackRow({ track, context, index, onRemove, showAlbum = 
         }}
         className={cn(
           'p-2 rounded-full transition',
-          liked ? 'text-accent-hi' : 'text-muted opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-white'
+          liked ? 'text-accent-hi' : 'text-muted opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-ink'
         )}
       >
         <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
@@ -91,7 +91,7 @@ export default function TrackRow({ track, context, index, onRemove, showAlbum = 
 
       <Menu
         button={
-          <button className="p-2 rounded-full text-muted opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-white transition" onClick={(e) => e.stopPropagation()}>
+          <button className="p-2 rounded-full text-muted opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-ink transition" onClick={(e) => e.stopPropagation()}>
             {downloading ? <Loader2 size={16} className="animate-spin opacity-100" /> : <MoreHorizontal size={16} />}
           </button>
         }
@@ -138,14 +138,14 @@ export default function TrackRow({ track, context, index, onRemove, showAlbum = 
         onChange={(e) => setRTitle(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && saveRename()}
         autoFocus
-        className="w-full rounded-xl bg-white/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 mt-1 mb-3"
+        className="w-full rounded-xl bg-overlay/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 mt-1 mb-3"
       />
       <label className="text-xs text-muted">Artist</label>
       <input
         value={rArtist}
         onChange={(e) => setRArtist(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && saveRename()}
-        className="w-full rounded-xl bg-white/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 mt-1"
+        className="w-full rounded-xl bg-overlay/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 mt-1"
       />
       <button
         onClick={saveRename}

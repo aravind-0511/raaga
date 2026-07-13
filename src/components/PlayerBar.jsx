@@ -56,7 +56,7 @@ export default function PlayerBar() {
               e.stopPropagation()
               useLibrary.getState().toggleLike(current)
             }}
-            className={cn('hidden md:block p-1.5 transition', liked ? 'text-accent-hi' : 'text-muted hover:text-white')}
+            className={cn('hidden md:block p-1.5 transition', liked ? 'text-accent-hi' : 'text-muted hover:text-ink')}
           >
             <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
           </button>
@@ -67,26 +67,26 @@ export default function PlayerBar() {
           <div className="flex items-center gap-4">
             <button
               onClick={player.toggleShuffle}
-              className={cn('p-1.5 transition', shuffle ? 'text-accent-hi' : 'text-muted hover:text-white')}
+              className={cn('p-1.5 transition', shuffle ? 'text-accent-hi' : 'text-muted hover:text-ink')}
               title="Shuffle"
             >
               <Shuffle size={16} />
             </button>
-            <button onClick={player.prev} className="p-1.5 text-white/80 hover:text-white transition" title="Previous">
+            <button onClick={player.prev} className="p-1.5 text-ink/80 hover:text-ink transition" title="Previous">
               <SkipBack size={18} fill="currentColor" />
             </button>
             <button
               onClick={player.toggle}
-              className="w-9 h-9 rounded-full bg-white text-black grid place-items-center hover:scale-105 transition"
+              className="w-9 h-9 rounded-full bg-ink text-bg grid place-items-center hover:scale-105 transition"
             >
               {playing ? <Pause size={17} fill="currentColor" /> : <Play size={17} fill="currentColor" className="ml-0.5" />}
             </button>
-            <button onClick={() => player.next()} className="p-1.5 text-white/80 hover:text-white transition" title="Next">
+            <button onClick={() => player.next()} className="p-1.5 text-ink/80 hover:text-ink transition" title="Next">
               <SkipForward size={18} fill="currentColor" />
             </button>
             <button
               onClick={player.cycleRepeat}
-              className={cn('p-1.5 transition', repeat !== 'off' ? 'text-accent-hi' : 'text-muted hover:text-white')}
+              className={cn('p-1.5 transition', repeat !== 'off' ? 'text-accent-hi' : 'text-muted hover:text-ink')}
               title={`Repeat: ${repeat}`}
             >
               <RepeatIcon size={16} />
@@ -103,13 +103,13 @@ export default function PlayerBar() {
 
         {/* mobile play/next/close */}
         <div className="flex md:hidden items-center gap-1">
-          <button onClick={player.toggle} className="w-10 h-10 rounded-full bg-white text-black grid place-items-center">
+          <button onClick={player.toggle} className="w-10 h-10 rounded-full bg-ink text-bg grid place-items-center">
             {playing ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" className="ml-0.5" />}
           </button>
-          <button onClick={() => player.next()} className="p-2 text-white/80">
+          <button onClick={() => player.next()} className="p-2 text-ink/80">
             <SkipForward size={20} fill="currentColor" />
           </button>
-          <button onClick={player.close} className="p-2 text-muted hover:text-white transition" title="Close">
+          <button onClick={player.close} className="p-2 text-muted hover:text-ink transition" title="Close">
             <X size={19} />
           </button>
         </div>
@@ -120,7 +120,7 @@ export default function PlayerBar() {
             align="right"
             button={
               <button
-                className={cn('p-2 rounded-full transition relative', peerList.length ? 'text-accent-hi' : 'text-muted hover:text-white')}
+                className={cn('p-2 rounded-full transition relative', peerList.length ? 'text-accent-hi' : 'text-muted hover:text-ink')}
                 title="Connect to a device"
               >
                 <MonitorSmartphone size={17} />
@@ -131,7 +131,7 @@ export default function PlayerBar() {
             }
           >
             <div className="px-3.5 py-2 text-xs text-muted">
-              This device: <span className="text-white/80">{session.deviceName}</span>
+              This device: <span className="text-ink/80">{session.deviceName}</span>
             </div>
             {peerList.length === 0 && (
               <div className="px-3.5 py-2 text-xs text-muted">Open Raaga in another tab to see devices here.</div>
@@ -144,21 +144,21 @@ export default function PlayerBar() {
           </Menu>
           <button
             onClick={() => (group ? session.leaveGroup() : session.startGroup())}
-            className={cn('p-2 rounded-full transition', group ? 'text-accent-hi' : 'text-muted hover:text-white')}
+            className={cn('p-2 rounded-full transition', group ? 'text-accent-hi' : 'text-muted hover:text-ink')}
             title={group ? 'Leave group session' : 'Start group session'}
           >
             <Users size={17} />
           </button>
           <button
             onClick={() => player.setQueueOpen(!queueOpen)}
-            className={cn('p-2 rounded-full transition', queueOpen ? 'text-accent-hi' : 'text-muted hover:text-white')}
+            className={cn('p-2 rounded-full transition', queueOpen ? 'text-accent-hi' : 'text-muted hover:text-ink')}
             title="Queue"
           >
             <ListMusic size={17} />
           </button>
           <button
             onClick={() => setSetting('volume', volume === 0 ? 1 : 0)}
-            className="p-2 text-muted hover:text-white transition"
+            className="p-2 text-muted hover:text-ink transition"
           >
             {volume === 0 ? <VolumeX size={17} /> : <Volume2 size={17} />}
           </button>
@@ -174,7 +174,7 @@ export default function PlayerBar() {
           />
           <button
             onClick={player.close}
-            className="p-2 rounded-full text-muted hover:text-white transition"
+            className="p-2 rounded-full text-muted hover:text-ink transition"
             title="Close song"
           >
             <X size={17} />
@@ -182,7 +182,7 @@ export default function PlayerBar() {
         </div>
       </div>
       {/* mobile progress hairline */}
-      <div className="md:hidden absolute top-0 left-0 right-0 h-0.5 bg-white/10">
+      <div className="md:hidden absolute top-0 left-0 right-0 h-0.5 bg-overlay/10">
         <div className="h-full bg-accent-hi" style={{ width: `${duration ? (position / duration) * 100 : 0}%` }} />
       </div>
     </div>

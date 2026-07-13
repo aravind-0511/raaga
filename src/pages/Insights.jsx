@@ -62,7 +62,7 @@ function RankList({ title, icon: Icon, entries, totalMs }) {
             <span className="text-xs text-muted w-4">{i + 1}</span>
             <div className="flex-1 min-w-0">
               <p className="text-[13px] font-medium line-clamp-1">{name}</p>
-              <div className="h-1 rounded-full bg-white/8 mt-1">
+              <div className="h-1 rounded-full bg-overlay/8 mt-1">
                 <div
                   className="h-full rounded-full bg-accent-hi"
                   style={{ width: `${Math.max(4, (ms / (entries[0]?.[1] || 1)) * 100)}%` }}
@@ -109,16 +109,23 @@ export default function Insights() {
           <BarChart data={stats.days} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
             <XAxis
               dataKey="day"
-              tick={{ fill: '#8b87a0', fontSize: 11 }}
+              tick={{ fill: 'var(--color-muted)', fontSize: 11 }}
               axisLine={false}
               tickLine={false}
               interval="preserveStartEnd"
               minTickGap={10}
             />
-            <YAxis tick={{ fill: '#8b87a0', fontSize: 11 }} axisLine={false} tickLine={false} width={28} allowDecimals={false} />
+            <YAxis tick={{ fill: 'var(--color-muted)', fontSize: 11 }} axisLine={false} tickLine={false} width={28} allowDecimals={false} />
             <Tooltip
-              cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-              contentStyle={{ background: '#1c1930', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }}
+              cursor={{ fill: 'color-mix(in srgb, var(--color-overlay) 6%, transparent)' }}
+              contentStyle={{
+                background: 'var(--color-surface-2)',
+                border: '1px solid color-mix(in srgb, var(--color-overlay) 10%, transparent)',
+                borderRadius: 12,
+                fontSize: 12,
+                color: 'var(--color-ink)',
+              }}
+              labelStyle={{ color: 'var(--color-ink)' }}
               formatter={(v) => [`${v} min`, 'Listened']}
             />
             <Bar dataKey="minutes" radius={[4, 4, 0, 0]}>

@@ -1,6 +1,16 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { PEAK_COUNT } from '../lib/player/waveform'
 
+// Canvas fillStyle can't resolve CSS custom properties directly, so read the
+// theme's solid hex tokens and build rgba() strings from them at draw-time —
+// keeps the waveform theme-aware without hardcoding a color for either mode.
+function hexToRgb(hex, fallback) {
+  const m = hex.trim().match(/^#?([0-9a-f]{6})$/i)
+  if (!m) return fallback
+  const n = parseInt(m[1], 16)
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
+}
+
 // Waveform seek bar: renders real precomputed peaks when available,
 // otherwise a flat rounded bar. Click/drag to scrub.
 export default function WaveformSeekBar({ peaks, position, duration, onSeek, height = 36 }) {
@@ -25,6 +35,10 @@ export default function WaveformSeekBar({ peaks, position, duration, onSeek, hei
     const progress = duration > 0 ? position / duration : 0
     const styles = getComputedStyle(document.documentElement)
     const accent = styles.getPropertyValue('--accent-hi').trim() || '#a78bfa'
+    const [or_, og, ob] = hexToRgb(styles.getPropertyValue('--color-overlay'), [255, 255, 255])
+    const [ir, ig, ib] = hexToRgb(styles.getPropertyValue('--color-ink'), [255, 255, 255])
+    const overlay = (a) => `rgba(${or_},${og},${ob},${a})`
+    const ink = (a) => `rgba(${ir},${ig},${ib},${a})`
 
     if (peaks && peaks.length) {
       const n = Math.min(peaks.length, PEAK_COUNT)
@@ -35,14 +49,14 @@ export default function WaveformSeekBar({ peaks, position, duration, onSeek, hei
         const amp = Math.max(0.08, peaks[i])
         const bh = amp * (h - 4)
         const played = i / n <= progress
-        ctx.fillStyle = played ? accent : 'rgba(255,255,255,0.22)'
+        ctx.fillStyle = played ? accent : overlay(0.22)
         ctx.beginPath()
         ctx.roundRect(x, (h - bh) / 2, barW, bh, 1.5)
         ctx.fill()
       }
     } else {
       const y = h / 2 - 2
-      ctx.fillStyle = 'rgba(255,255,255,0.18)'
+      ctx.fillStyle = overlay(0.18)
       ctx.beginPath()
       ctx.roundRect(0, y, w, 4, 2)
       ctx.fill()
@@ -51,14 +65,14 @@ export default function WaveformSeekBar({ peaks, position, duration, onSeek, hei
       ctx.roundRect(0, y, Math.max(4, w * progress), 4, 2)
       ctx.fill()
       // playhead dot
-      ctx.fillStyle = '#fff'
+      ctx.fillStyle = ink(1)
       ctx.beginPath()
       ctx.arc(Math.max(4, w * progress), h / 2, dragging.current || hoverX !== null ? 5 : 0, 0, Math.PI * 2)
       ctx.fill()
     }
 
     if (hoverX !== null) {
-      ctx.fillStyle = 'rgba(255,255,255,0.35)'
+      ctx.fillStyle = ink(0.35)
       ctx.fillRect(hoverX, 0, 1, h)
     }
   }, [peaks, position, duration, hoverX])

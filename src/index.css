@@ -1,44 +1,73 @@
 @import "tailwindcss";
 
-@theme {
-  --color-bg: #0b0a12;
-  --color-surface: #14121f;
-  --color-surface-2: #1c1930;
-  --color-line: rgba(255, 255, 255, 0.08);
-  --color-muted: #8b87a0;
-  --font-sans: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
-}
-
-@theme inline {
-  --color-accent: var(--accent);
-  --color-accent-hi: var(--accent-hi);
-}
-
+/* Raw theme tokens live in plain :root (not @theme) so Lightning CSS treats
+   them as ordinary runtime custom properties — @theme-declared tokens get
+   statically inlined wherever they're used inside color-mix()/etc, which
+   silently breaks runtime theme switching. @theme inline below just aliases
+   these to the --color-* names Tailwind needs to generate utility classes. */
 :root {
-  --accent: #7c3aed;
-  --accent-hi: #a78bfa;
+  /* Dark theme — "Espresso": warm brown-black, not cool blue-black */
+  --bg: #150f0c;
+  --surface: #1f1712;
+  --surface-2: #2b2018;
+  --line: rgba(255, 230, 205, 0.08);
+  --muted: #a78f7a;
+  --ink: #f3e7d9; /* primary text */
+  --overlay: #ffffff; /* neutral tint for hover/active backgrounds & borders */
+
+  /* default accent: Copper (Espresso theme's signature) */
+  --accent: #c17a3d;
+  --accent-hi: #e0a05c;
 }
+
+/* Light theme — "Sandalwood": warm cream + red-brown/terracotta accent */
+:root[data-theme="light"] {
+  --bg: #f6eee1;
+  --surface: #fffbf5;
+  --surface-2: #ede0cc;
+  --line: rgba(120, 72, 44, 0.14);
+  --muted: #8a6a52;
+  --ink: #2e1b12;
+  --overlay: #1a0f08;
+}
+
+:root[data-accent="copper"] { --accent: #c17a3d; --accent-hi: #e0a05c; }
+:root[data-accent="terracotta"] { --accent: #9c3b2c; --accent-hi: #c15a3e; }
+:root[data-accent="violet"] { --accent: #7c3aed; --accent-hi: #a78bfa; }
 :root[data-accent="amber"] { --accent: #d97706; --accent-hi: #fbbf24; }
 :root[data-accent="rose"] { --accent: #e11d48; --accent-hi: #fb7185; }
 :root[data-accent="cyan"] { --accent: #0891b2; --accent-hi: #22d3ee; }
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-muted: var(--muted);
+  --color-ink: var(--ink);
+  --color-overlay: var(--overlay);
+  --color-accent: var(--accent);
+  --color-accent-hi: var(--accent-hi);
+  --font-sans: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+}
 
 html, body, #root { height: 100%; }
 
 body {
   background: radial-gradient(1200px 800px at 80% -10%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 60%),
     radial-gradient(900px 600px at -10% 110%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 55%),
-    var(--color-bg);
-  color: #f2f0fa;
+    var(--bg);
+  color: var(--ink);
   font-family: var(--font-sans);
   overflow: hidden;
 }
 
 /* glass panels */
 .glass {
-  background: color-mix(in srgb, #ffffff 4%, transparent);
+  background: color-mix(in srgb, var(--overlay) 4%, transparent);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid color-mix(in srgb, var(--overlay) 8%, transparent);
 }
 
 .accent-glow {
@@ -48,10 +77,10 @@ body {
 /* scrollbars */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+  scrollbar-color: color-mix(in srgb, var(--overlay) 14%, transparent) transparent;
 }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
-*::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 8px; }
+*::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--overlay) 14%, transparent); border-radius: 8px; }
 *::-webkit-scrollbar-track { background: transparent; }
 
 /* range inputs (volume, crossfade, seek fallback) */
@@ -60,7 +89,7 @@ input[type="range"] {
   appearance: none;
   height: 4px;
   border-radius: 4px;
-  background: linear-gradient(to right, var(--accent-hi) var(--fill, 50%), rgba(255, 255, 255, 0.15) var(--fill, 50%));
+  background: linear-gradient(to right, var(--accent-hi) var(--fill, 50%), color-mix(in srgb, var(--overlay) 15%, transparent) var(--fill, 50%));
   outline: none;
   cursor: pointer;
 }
@@ -70,6 +99,7 @@ input[type="range"]::-webkit-slider-thumb {
   height: 12px;
   border-radius: 50%;
   background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   opacity: 0;
   transition: opacity 0.15s;
 }
@@ -79,6 +109,7 @@ input[type="range"]::-moz-range-thumb {
   border: none;
   border-radius: 50%;
   background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   opacity: 0;
   transition: opacity 0.15s;
 }

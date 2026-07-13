@@ -84,7 +84,7 @@ export default function Browse() {
               songs.length > 0 && (
                 <button
                   onClick={() => player.playTrack(songs[0], songs)}
-                  className="flex items-center gap-1.5 text-sm bg-accent hover:bg-accent-hi rounded-full px-4 py-1.5 font-medium transition"
+                  className="flex items-center gap-1.5 text-sm bg-accent hover:bg-accent-hi text-white rounded-full px-4 py-1.5 font-medium transition"
                 >
                   <Play size={13} fill="currentColor" /> Play all
                 </button>

@@ -66,14 +66,14 @@ export default function MoodPromptModal({ open, onClose }) {
         onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), build())}
         rows={2}
         placeholder="rainy afternoon coding session…"
-        className="w-full rounded-xl bg-white/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 resize-none"
+        className="w-full rounded-xl bg-overlay/5 border border-line px-3.5 py-2.5 text-sm outline-none focus:border-accent-hi/60 resize-none"
       />
       <div className="flex flex-wrap gap-1.5 mt-3">
         {SUGGESTIONS.map((s) => (
           <button
             key={s}
             onClick={() => setPrompt(s)}
-            className="text-[11px] px-2.5 py-1 rounded-full bg-white/5 text-muted hover:text-white hover:bg-white/10 transition"
+            className="text-[11px] px-2.5 py-1 rounded-full bg-overlay/5 text-muted hover:text-ink hover:bg-overlay/10 transition"
           >
             {s}
           </button>
