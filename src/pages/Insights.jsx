@@ -42,7 +42,7 @@ function aggregate(events) {
 function StatCard({ icon: Icon, label, value }) {
   return (
     <div className="glass rounded-2xl p-4">
-      <Icon size={18} className="text-accent-hi mb-2" />
+      <Icon size={18} className="text-muted mb-2" />
       <p className="text-xl font-bold tracking-tight">{value}</p>
       <p className="text-xs text-muted mt-0.5">{label}</p>
     </div>
@@ -53,7 +53,7 @@ function RankList({ title, icon: Icon, entries, totalMs }) {
   return (
     <div className="glass rounded-2xl p-4">
       <p className="flex items-center gap-2 text-sm font-semibold mb-3">
-        <Icon size={15} className="text-accent-hi" /> {title}
+        <Icon size={15} className="text-muted" /> {title}
       </p>
       {entries.length === 0 && <p className="text-xs text-muted">Not enough data yet.</p>}
       <div className="flex flex-col gap-2">

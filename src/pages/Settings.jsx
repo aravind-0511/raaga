@@ -24,7 +24,7 @@ function Section({ icon: Icon, title, hint, children }) {
   return (
     <div className="glass rounded-2xl p-5 mb-4">
       <p className="flex items-center gap-2 font-semibold text-sm">
-        <Icon size={16} className="text-accent-hi" /> {title}
+        <Icon size={16} className="text-muted" /> {title}
       </p>
       {hint && <p className="text-xs text-muted mt-1 mb-3">{hint}</p>}
       {children}

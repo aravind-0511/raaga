@@ -156,7 +156,7 @@ export default function Library() {
           {downloaded.length > 0 && (
             <>
               <p className="flex items-center gap-2 text-sm font-semibold mt-8 mb-3">
-                <HardDriveDownload size={15} className="text-accent-hi" /> Offline downloads
+                <HardDriveDownload size={15} className="text-muted" /> Offline downloads
               </p>
               <TrackList tracks={downloaded} />
             </>

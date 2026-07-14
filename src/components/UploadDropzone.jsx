@@ -73,7 +73,7 @@ export default function UploadDropzone({ compact = false }) {
         </div>
       ) : (
         <div className="flex flex-col items-center gap-2">
-          <UploadCloud size={compact ? 20 : 32} className="text-accent-hi" />
+          <UploadCloud size={compact ? 20 : 32} className="text-muted" />
           <p className={cn('font-medium', compact ? 'text-sm' : '')}>Drop audio or video files here</p>
           {!compact && (
             <p className="text-xs text-muted max-w-sm">

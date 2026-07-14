@@ -109,14 +109,14 @@ export default function Home() {
         <>
           <SectionTitle>
             <span className="flex items-center gap-2">
-              <History size={19} className="text-accent-hi" /> Time Capsule
+              <History size={19} className="text-muted" /> Time Capsule
             </span>
           </SectionTitle>
           {capsule.map((g) => (
             <div key={g.monthsBack} className="glass rounded-2xl p-4 mb-3">
               <p className="text-xs text-muted mb-2.5">
                 Around this time{' '}
-                <span className="text-accent-hi font-medium">
+                <span className="text-ink font-medium">
                   {g.monthsBack === 12 ? 'a year ago' : g.monthsBack === 1 ? 'a month ago' : `${g.monthsBack} months ago`}
                 </span>{' '}
                 you had these on repeat:
