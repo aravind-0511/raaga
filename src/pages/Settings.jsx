@@ -146,7 +146,7 @@ export default function Settings() {
       <Section
         icon={Globe}
         title="Catalog API"
-        hint="Raaga uses an unofficial JioSaavn API for the online catalog (Tamil, Hindi & more). Public instances can rate-limit; you can self-host and point this at your own URL."
+        hint="Riff uses an unofficial JioSaavn API for the online catalog (Tamil, Hindi & more). Public instances can rate-limit; you can self-host and point this at your own URL."
       >
         <div className="flex gap-2">
           <input
@@ -190,7 +190,7 @@ export default function Settings() {
       <Section
         icon={MonitorSmartphone}
         title="Devices"
-        hint="Every open Raaga tab is a “device”. Use the device icon in the player bar to hand playback off between them."
+        hint="Every open Riff tab is a “device”. Use the device icon in the player bar to hand playback off between them."
       >
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2.5 text-sm">
@@ -211,7 +211,7 @@ export default function Settings() {
       </Section>
 
       <p className="text-[11px] text-muted mt-6 leading-relaxed">
-        Raaga stores everything locally in your browser (IndexedDB) — library, playlists, likes, history, downloads. The catalog
+        Riff stores everything locally in your browser (IndexedDB) — library, playlists, likes, history, downloads. The catalog
         API is unofficial and best-effort; your uploads and downloads keep working even fully offline.
       </p>
     </div>

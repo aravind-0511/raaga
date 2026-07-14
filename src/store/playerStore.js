@@ -29,7 +29,7 @@ function applyMediaSession(track) {
   navigator.mediaSession.metadata = new MediaMetadata({
     title: track.title,
     artist: track.artist,
-    album: track.album || 'Raaga',
+    album: track.album || 'Riff',
     artwork: track.artUrl ? [{ src: track.artUrl }] : [],
   })
 }

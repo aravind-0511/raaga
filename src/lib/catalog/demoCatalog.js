@@ -16,11 +16,11 @@ const SCALES = {
 }
 
 const DEMOS = [
-  { id: 'demo:veena-dawn', title: 'Veena at Dawn', artist: 'Raaga Demo Ensemble', album: 'Built-in Sessions', genre: 'Carnatic Fusion', scale: 'kalyani', bpm: 72, root: 220, bright: 0.4, seconds: 24 },
-  { id: 'demo:filter-monsoon', title: 'Filter Coffee Monsoon', artist: 'Raaga Demo Ensemble', album: 'Built-in Sessions', genre: 'Lo-fi', scale: 'pentatonic', bpm: 84, root: 196, bright: 0.25, seconds: 24 },
-  { id: 'demo:kuthu-circuit', title: 'Kuthu Circuit', artist: 'Raaga Demo Ensemble', album: 'Built-in Sessions', genre: 'Dance', scale: 'minor', bpm: 132, root: 147, bright: 0.7, seconds: 20 },
-  { id: 'demo:marina-nightdrive', title: 'Marina Night Drive', artist: 'Raaga Demo Ensemble', album: 'Built-in Sessions', genre: 'Synthwave', scale: 'minor', bpm: 104, root: 165, bright: 0.55, seconds: 24 },
-  { id: 'demo:study-sruthi', title: 'Study Sruthi', artist: 'Raaga Demo Ensemble', album: 'Built-in Sessions', genre: 'Ambient', scale: 'major', bpm: 60, root: 262, bright: 0.2, seconds: 28 },
+  { id: 'demo:veena-dawn', title: 'Veena at Dawn', artist: 'Riff Demo Ensemble', album: 'Built-in Sessions', genre: 'Carnatic Fusion', scale: 'kalyani', bpm: 72, root: 220, bright: 0.4, seconds: 24 },
+  { id: 'demo:filter-monsoon', title: 'Filter Coffee Monsoon', artist: 'Riff Demo Ensemble', album: 'Built-in Sessions', genre: 'Lo-fi', scale: 'pentatonic', bpm: 84, root: 196, bright: 0.25, seconds: 24 },
+  { id: 'demo:kuthu-circuit', title: 'Kuthu Circuit', artist: 'Riff Demo Ensemble', album: 'Built-in Sessions', genre: 'Dance', scale: 'minor', bpm: 132, root: 147, bright: 0.7, seconds: 20 },
+  { id: 'demo:marina-nightdrive', title: 'Marina Night Drive', artist: 'Riff Demo Ensemble', album: 'Built-in Sessions', genre: 'Synthwave', scale: 'minor', bpm: 104, root: 165, bright: 0.55, seconds: 24 },
+  { id: 'demo:study-sruthi', title: 'Study Sruthi', artist: 'Riff Demo Ensemble', album: 'Built-in Sessions', genre: 'Ambient', scale: 'major', bpm: 60, root: 262, bright: 0.2, seconds: 28 },
 ]
 
 function mulberry(seed) {

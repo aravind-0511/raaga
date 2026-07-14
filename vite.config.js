@@ -17,8 +17,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Raaga',
-        short_name: 'Raaga',
+        name: 'Riff',
+        short_name: 'Riff',
         description: 'Your music, your vibe — a local-first player with an Indian/Tamil catalog.',
         theme_color: '#0a0a0b',
         background_color: '#0a0a0b',

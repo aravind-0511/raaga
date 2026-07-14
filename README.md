@@ -1,4 +1,4 @@
-# Raaga 🎵
+# Riff 🎸
 
 A Spotify-style music player that runs entirely in your browser — dark, glassy, violet-accented, and built around **your own music** plus an online catalog with deep **Tamil / Indian** coverage.
 

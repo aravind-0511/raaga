@@ -86,7 +86,7 @@ export default function Insights() {
       <EmptyState
         icon={BarChart3}
         title="Your listening story starts here"
-        hint="Play some music and Raaga builds a continuously updated recap — top artists, genres, and hours listened."
+        hint="Play some music and Riff builds a continuously updated recap — top artists, genres, and hours listened."
       />
     )
   }

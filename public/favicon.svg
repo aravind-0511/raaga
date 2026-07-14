@@ -1,17 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220">
   <defs>
-    <linearGradient id="badge" x1="4" y1="2" x2="60" y2="62" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#e0a05c"/>
-      <stop offset="0.55" stop-color="#c15a3e"/>
-      <stop offset="1" stop-color="#8a3226"/>
-    </linearGradient>
-    <linearGradient id="bars" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#fff6ea"/>
-      <stop offset="1" stop-color="#f6eee1"/>
+    <radialGradient id="splat" cx="0.42" cy="0.38" r="0.75">
+      <stop offset="0" stop-color="#8a2222"/>
+      <stop offset="0.7" stop-color="#6b1a1a"/>
+      <stop offset="1" stop-color="#4a1010"/>
+    </radialGradient>
+    <linearGradient id="hand" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#efefef"/>
+      <stop offset="0.55" stop-color="#9a9a9a"/>
+      <stop offset="1" stop-color="#2a2a2a"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="16" fill="url(#badge)"/>
-  <rect x="12" y="28" width="9" height="20" rx="4" fill="url(#bars)"/>
-  <rect x="27.5" y="16" width="9" height="32" rx="4" fill="url(#bars)"/>
-  <rect x="43" y="24" width="9" height="24" rx="4" fill="url(#bars)"/>
+
+  <circle cx="100" cy="128" r="76" fill="url(#splat)"/>
+  <g fill="#6b1a1a">
+    <circle cx="52" cy="34" r="6" opacity="0.9"/>
+    <circle cx="146" cy="26" r="8" opacity="0.85"/>
+    <circle cx="168" cy="58" r="4.5" opacity="0.85"/>
+    <circle cx="36" cy="60" r="4" opacity="0.8"/>
+    <circle cx="128" cy="14" r="3.5" opacity="0.85"/>
+    <circle cx="72" cy="16" r="4.5" opacity="0.85"/>
+    <circle cx="160" cy="88" r="3.5" opacity="0.75"/>
+    <path d="M96 18 Q102 2 110 14 Q106 26 96 18Z" opacity="0.85"/>
+    <path d="M150 48 Q164 40 162 52 Q152 58 150 48Z" opacity="0.8"/>
+    <path d="M30 42 Q40 30 44 40 Q36 50 30 42Z" opacity="0.8"/>
+  </g>
+
+  <rect x="78" y="163" width="44" height="52" rx="9" fill="url(#hand)"/>
+  <rect x="66" y="126" width="68" height="50" rx="21" fill="url(#hand)"/>
+  <ellipse cx="100" cy="119" rx="27" ry="19" fill="url(#hand)"/>
+  <rect x="69" y="28" width="21" height="98" rx="10.5" fill="url(#hand)"/>
+  <rect x="111" y="44" width="18" height="82" rx="9" fill="url(#hand)"/>
+  <rect x="38" y="136" width="32" height="19" rx="9.5" fill="url(#hand)" transform="rotate(-28 54 145)"/>
 </svg>

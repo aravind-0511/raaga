@@ -58,7 +58,7 @@ export default function MoodPromptModal({ open, onClose }) {
   return (
     <Modal open={open} onClose={onClose} title="Describe a vibe">
       <p className="text-sm text-muted mb-3">
-        Tell Raaga the mood and it assembles a playlist from your library plus the online catalog.
+        Tell Riff the mood and it assembles a playlist from your library plus the online catalog.
       </p>
       <textarea
         value={prompt}

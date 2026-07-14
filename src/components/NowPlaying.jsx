@@ -140,7 +140,7 @@ export default function NowPlaying() {
               This device: <span className="text-ink/80">{session.deviceName}</span>
             </div>
             {peerList.length === 0 && (
-              <div className="px-3.5 py-2 text-xs text-muted">Open Raaga in another tab to see devices.</div>
+              <div className="px-3.5 py-2 text-xs text-muted">Open Riff in another tab to see devices.</div>
             )}
             {peerList.map(([id, p]) => (
               <MenuItem key={id} icon={MonitorSmartphone} onClick={() => session.handoffTo(id)}>
