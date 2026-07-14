@@ -53,7 +53,7 @@ export default function Home() {
   const uploads = useMemo(() => tracks.filter((t) => t.source === 'local'), [tracks])
 
   return (
-    <div className="fade-up max-w-5xl">
+    <div className="fade-up max-w-5xl mx-auto">
       <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{greeting()}</h1>
       <p className="text-muted text-sm mt-1">Your music, your vibe.</p>
 

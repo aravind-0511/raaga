@@ -51,13 +51,13 @@ export default function Settings() {
   }
 
   return (
-    <div className="fade-up max-w-2xl">
+    <div className="fade-up max-w-2xl mx-auto">
       <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Settings</h1>
 
       <Section
         icon={isLight ? Sun : Moon}
         title="Appearance"
-        hint={isLight ? 'Sandalwood — warm cream with a red-brown accent.' : 'Espresso — warm brown-black with a copper accent.'}
+        hint={isLight ? 'Sandalwood — muted warm tan with a red-brown accent.' : 'Onyx — neutral near-black with a copper accent.'}
       >
         <button
           onClick={settings.toggleTheme}
@@ -68,7 +68,7 @@ export default function Settings() {
             style={{ left: isLight ? '50%' : '0.25rem', width: 'calc(50% - 0.25rem)' }}
           />
           <span className={cn('relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors', !isLight ? 'text-white' : 'text-muted')}>
-            <Moon size={15} /> Espresso
+            <Moon size={15} /> Onyx
           </span>
           <span className={cn('relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors', isLight ? 'text-white' : 'text-muted')}>
             <Sun size={15} /> Sandalwood

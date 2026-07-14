@@ -57,7 +57,7 @@ export default function PlaylistDetail() {
   }
 
   return (
-    <div className="fade-up max-w-4xl">
+    <div className="fade-up max-w-4xl mx-auto">
       <div className="flex flex-col sm:flex-row gap-5 sm:items-end mb-6">
         <div className="relative group w-40 h-40 shrink-0">
           <Art src={playlist.coverUrl} size="w-40 h-40" rounded="rounded-2xl" iconSize={40} className="accent-glow" />

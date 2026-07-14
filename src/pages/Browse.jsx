@@ -52,7 +52,7 @@ export default function Browse() {
   }
 
   return (
-    <div className="fade-up max-w-5xl">
+    <div className="fade-up max-w-5xl mx-auto">
       <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Browse</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">

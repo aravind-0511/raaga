@@ -92,7 +92,7 @@ export default function Insights() {
   }
 
   return (
-    <div className="fade-up max-w-4xl">
+    <div className="fade-up max-w-4xl mx-auto">
       <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-1">Listening Insights</h1>
       <p className="text-sm text-muted mb-6">Your recap, updated live — not once a year.</p>
 

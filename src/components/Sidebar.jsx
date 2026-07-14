@@ -30,7 +30,7 @@ export default function Sidebar() {
         <span className="text-lg font-bold tracking-tight flex-1">Raaga</span>
         <button
           onClick={toggleTheme}
-          title={isLight ? 'Switch to Espresso (dark)' : 'Switch to Sandalwood (light)'}
+          title={isLight ? 'Switch to Onyx (dark)' : 'Switch to Sandalwood (light)'}
           className="p-1.5 rounded-full text-muted hover:text-ink hover:bg-overlay/8 transition"
         >
           {isLight ? <Moon size={15} /> : <Sun size={15} />}

@@ -52,7 +52,7 @@ export default function Library() {
   }, [lib.tracks])
 
   return (
-    <div className="fade-up max-w-5xl">
+    <div className="fade-up max-w-5xl mx-auto">
       <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-5">Your Library</h1>
 
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1">

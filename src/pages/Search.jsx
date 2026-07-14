@@ -63,7 +63,7 @@ export default function Search() {
   }
 
   return (
-    <div className="fade-up max-w-4xl">
+    <div className="fade-up max-w-4xl mx-auto">
       <div className="sticky top-0 z-10 -mx-2 px-2 pb-3 pt-1 bg-bg/70 backdrop-blur-xl">
         <div className="relative">
           <SearchIcon size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />

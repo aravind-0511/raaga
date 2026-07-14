@@ -8,7 +8,7 @@ import { engine } from '../lib/player/engine'
 const THEME_ACCENT = { dark: 'copper', light: 'terracotta' }
 
 const DEFAULTS = {
-  theme: 'dark', // dark (Espresso) | light (Sandalwood)
+  theme: 'dark', // dark (Onyx) | light (Sandalwood)
   quality: 'high', // normal | high | vhigh
   crossfade: 0, // seconds, 0-12
   accent: 'copper', // copper | terracotta | violet | amber | rose | cyan
