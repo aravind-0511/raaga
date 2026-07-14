@@ -15,6 +15,7 @@ const DEFAULTS = {
   catalogUrl: DEFAULT_CATALOG_URL,
   volume: 1,
   gapless: true,
+  sidebarCollapsed: false,
 }
 
 function applySideEffects(state) {
@@ -49,6 +50,12 @@ export const useSettings = create((set, get) => ({
     applySideEffects(get())
     putSetting('theme', nextTheme)
     putSetting('accent', nextAccent)
+  },
+
+  toggleSidebar: () => {
+    const next = !get().sidebarCollapsed
+    set({ sidebarCollapsed: next })
+    putSetting('sidebarCollapsed', next)
   },
 }))
 

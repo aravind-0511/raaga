@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Sparkles, History, Clock, Play } from 'lucide-react'
+import { Sparkles, History, Timer, Play } from 'lucide-react'
 import { useLibrary, recentTracks } from '../store/libraryStore'
 import { usePlayer } from '../store/playerStore'
 import { Art, SectionTitle } from './../components/ui'
@@ -60,16 +60,24 @@ export default function Home() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
         <button
           onClick={() => setMoodOpen(true)}
-          className="glass rounded-2xl p-5 text-left hover:bg-overlay/8 transition group"
+          className="glass rounded-2xl p-4 flex items-center gap-4 text-left hover:bg-overlay/8 transition group"
         >
-          <Sparkles className="text-accent-hi mb-3 group-hover:scale-110 transition" size={22} />
-          <p className="font-semibold">Mood playlist</p>
-          <p className="text-xs text-muted mt-0.5">Describe a vibe, get a playlist</p>
+          <span className="shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent-hi grid place-items-center group-hover:scale-105 transition">
+            <Sparkles size={20} className="text-white" />
+          </span>
+          <div className="min-w-0">
+            <p className="font-semibold">Mood playlist</p>
+            <p className="text-xs text-muted mt-0.5">Describe a vibe, get a playlist</p>
+          </div>
         </button>
-        <Link to="/focus" className="glass rounded-2xl p-5 hover:bg-overlay/8 transition group">
-          <Clock className="text-accent-hi mb-3 group-hover:scale-110 transition" size={22} />
-          <p className="font-semibold">Focus session</p>
-          <p className="text-xs text-muted mt-0.5">Distraction-free player + pomodoro</p>
+        <Link to="/focus" className="glass rounded-2xl p-4 flex items-center gap-4 hover:bg-overlay/8 transition group">
+          <span className="shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent-hi grid place-items-center group-hover:scale-105 transition">
+            <Timer size={20} className="text-white" />
+          </span>
+          <div className="min-w-0">
+            <p className="font-semibold">Focus session</p>
+            <p className="text-xs text-muted mt-0.5">Distraction-free player + pomodoro</p>
+          </div>
         </Link>
       </div>
 
