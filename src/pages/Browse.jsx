@@ -53,7 +53,7 @@ export default function Browse() {
 
   return (
     <div className="fade-up max-w-5xl mx-auto">
-      <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Browse</h1>
+      <h1 className="font-display text-3xl md:text-4xl tracking-wide mb-6">Browse</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {CATEGORIES.map((cat) => (
@@ -61,7 +61,7 @@ export default function Browse() {
             key={cat.name}
             onClick={() => open(cat)}
             className={cn(
-              'relative overflow-hidden rounded-2xl p-4 h-24 text-left font-semibold transition hover:scale-[1.02]',
+              'relative overflow-hidden rounded-2xl p-4 h-24 text-left font-semibold transition hover:scale-[1.02] active:scale-[0.97]',
               active?.name === cat.name && 'ring-2 ring-white/40'
             )}
             style={{

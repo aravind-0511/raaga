@@ -34,7 +34,7 @@ export default function Sidebar() {
     >
       <div className={cn('flex items-center mb-5', collapsed ? 'flex-col gap-2 px-0' : 'gap-2.5 px-3')}>
         <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="w-8 h-8 rounded-lg accent-glow shrink-0" />
-        {!collapsed && <span className="text-lg font-bold tracking-tight flex-1">Riff</span>}
+        {!collapsed && <span className="font-display text-xl tracking-wide flex-1">Riff</span>}
         {!collapsed && (
           <button
             onClick={toggleTheme}

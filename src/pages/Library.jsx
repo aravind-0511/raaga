@@ -53,7 +53,7 @@ export default function Library() {
 
   return (
     <div className="fade-up max-w-5xl mx-auto">
-      <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-5">Your Library</h1>
+      <h1 className="font-display text-3xl md:text-4xl tracking-wide mb-5">Your Library</h1>
 
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
         {TABS.map(({ id, label, icon: Icon }) => (
@@ -78,13 +78,13 @@ export default function Library() {
               const pl = await lib.createPlaylist({ name: 'New Playlist' })
               navigate(`/playlist/${pl.id}`)
             }}
-            className="glass rounded-2xl p-4 flex flex-col items-center justify-center gap-2 min-h-44 border-2 border-dashed border-overlay/15 hover:border-overlay/30 text-muted hover:text-ink transition"
+            className="glass lift rounded-2xl p-4 flex flex-col items-center justify-center gap-2 min-h-44 border-2 border-dashed border-overlay/15 hover:border-overlay/30 text-muted hover:text-ink transition"
           >
             <Plus size={22} />
             <span className="text-sm font-medium">New playlist</span>
           </button>
           {lib.playlists.map((pl) => (
-            <Link key={pl.id} to={`/playlist/${pl.id}`} className="glass rounded-2xl p-4 hover:bg-overlay/8 transition group">
+            <Link key={pl.id} to={`/playlist/${pl.id}`} className="glass lift rounded-2xl p-4 hover:bg-overlay/8 transition group">
               <Art src={pl.coverUrl} size="w-full aspect-square h-auto" rounded="rounded-xl" iconSize={28} className="mb-3" />
               <p className="font-medium text-sm line-clamp-1 flex items-center gap-1.5">
                 {pl.name}
@@ -134,7 +134,7 @@ export default function Library() {
         (albums.length ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {albums.map((a) => (
-              <button key={a.name} onClick={() => player.playTrack(a.tracks[0], a.tracks)} className="glass rounded-xl p-3 text-left hover:bg-overlay/8 transition">
+              <button key={a.name} onClick={() => player.playTrack(a.tracks[0], a.tracks)} className="glass lift rounded-xl p-3 text-left hover:bg-overlay/8 transition">
                 <Art src={a.artUrl} size="w-full aspect-square h-auto" rounded="rounded-lg" iconSize={24} className="mb-2" />
                 <p className="text-xs font-medium line-clamp-1">{a.name}</p>
                 <p className="text-[10px] text-muted line-clamp-1">{a.tracks.length} tracks</p>

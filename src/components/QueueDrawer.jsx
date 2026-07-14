@@ -1,11 +1,13 @@
 import { X, ListMusic } from 'lucide-react'
 import { usePlayer } from '../store/playerStore'
 import { Art, EmptyState } from './ui'
+import { useSwipeToDismiss } from '../lib/useSwipeToDismiss'
 import { cn, formatTime } from '../lib/utils'
 
 export default function QueueDrawer() {
   const { queue, index, queueOpen } = usePlayer()
   const player = usePlayer.getState()
+  const swipe = useSwipeToDismiss(() => usePlayer.getState().setQueueOpen(false))
   if (!queueOpen) return null
 
   return (
@@ -23,12 +25,17 @@ export default function QueueDrawer() {
           // desktop: static side panel
           'md:static md:z-auto md:w-80 md:max-h-none md:rounded-none md:border-t-0 md:border-l md:bg-transparent md:backdrop-blur-none md:pb-0'
         )}
+        style={swipe.style}
       >
-        <div className="flex items-center justify-between px-4 py-4 border-b border-line">
+        {/* drag handle — swipe down to close (mobile) */}
+        <div className="md:hidden flex justify-center pt-2.5 pb-0.5 shrink-0 touch-none" {...swipe.handlers}>
+          <span className="w-9 h-1 rounded-full bg-overlay/20" />
+        </div>
+        <div className="flex items-center justify-between px-4 py-4 border-b border-line touch-none md:touch-auto" {...swipe.handlers}>
           <h3 className="font-semibold text-sm">Queue</h3>
           <button
             onClick={() => player.setQueueOpen(false)}
-            className="p-2 rounded-full hover:bg-overlay/10 text-muted hover:text-ink transition"
+            className="p-2 rounded-full hover:bg-overlay/10 text-muted hover:text-ink transition active:scale-90"
           >
             <X size={16} />
           </button>

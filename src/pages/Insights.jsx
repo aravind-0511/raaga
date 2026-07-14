@@ -43,7 +43,7 @@ function StatCard({ icon: Icon, label, value }) {
   return (
     <div className="glass rounded-2xl p-4">
       <Icon size={18} className="text-muted mb-2" />
-      <p className="text-xl font-bold tracking-tight">{value}</p>
+      <p className="font-condensed text-2xl font-semibold">{value}</p>
       <p className="text-xs text-muted mt-0.5">{label}</p>
     </div>
   )
@@ -93,7 +93,7 @@ export default function Insights() {
 
   return (
     <div className="fade-up max-w-4xl mx-auto">
-      <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-1">Listening Insights</h1>
+      <h1 className="font-display text-3xl md:text-4xl tracking-wide mb-1">Listening Insights</h1>
       <p className="text-sm text-muted mb-6">Your recap, updated live — not once a year.</p>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

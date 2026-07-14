@@ -5,6 +5,7 @@ import { useSession } from '../store/sessionStore'
 import { Art, Menu, MenuItem } from './ui'
 import WaveformSeekBar from './WaveformSeekBar'
 import Visualizer from './Visualizer'
+import { useSwipeToDismiss } from '../lib/useSwipeToDismiss'
 import { cn, formatTime } from '../lib/utils'
 
 export default function NowPlaying() {
@@ -17,13 +18,14 @@ export default function NowPlaying() {
   const group = useSession((s) => s.group)
   const session = useSession.getState()
   const peerList = Object.entries(peers)
+  const swipe = useSwipeToDismiss(() => usePlayer.getState().setNowPlayingOpen(false))
 
   if (!nowPlayingOpen || !current) return null
   const RepeatIcon = repeat === 'one' ? Repeat1 : Repeat
   const upNext = queue[index + 1]
 
   return (
-    <div className="fixed inset-0 z-40 bg-bg/95 backdrop-blur-2xl flex flex-col fade-up overflow-y-auto">
+    <div className="fixed inset-0 z-40 bg-bg/95 backdrop-blur-2xl flex flex-col fade-up overflow-y-auto" style={swipe.style}>
       {/* ambient glow behind art */}
       <div
         className="pointer-events-none absolute inset-0 opacity-40"
@@ -33,7 +35,12 @@ export default function NowPlaying() {
         }}
       />
 
-      <div className="relative flex items-center justify-between px-5 pt-5 md:px-10">
+      {/* drag handle — swipe down to close (mobile) */}
+      <div className="md:hidden flex justify-center pt-2.5 pb-0.5 shrink-0 touch-none" {...swipe.handlers}>
+        <span className="w-9 h-1 rounded-full bg-overlay/20" />
+      </div>
+
+      <div className="relative flex items-center justify-between px-5 pt-3 md:pt-5 md:px-10 shrink-0 touch-none" {...swipe.handlers}>
         <button
           onClick={() => player.setNowPlayingOpen(false)}
           className="p-2 rounded-full hover:bg-overlay/10 text-muted hover:text-ink transition"
@@ -66,7 +73,7 @@ export default function NowPlaying() {
         )}
 
         <div className="text-center w-full">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight line-clamp-1">{current.title}</h1>
+          <h1 className="font-display text-3xl md:text-4xl tracking-wide line-clamp-1">{current.title}</h1>
           <p className="text-muted mt-1 line-clamp-1">
             {current.artist}
             {current.album ? ` · ${current.album}` : ''}
@@ -82,22 +89,22 @@ export default function NowPlaying() {
         </div>
 
         <div className="flex items-center gap-6 md:gap-8">
-          <button onClick={player.toggleShuffle} className={cn('p-2 transition', shuffle ? 'text-accent-hi' : 'text-muted hover:text-ink')}>
+          <button onClick={player.toggleShuffle} className={cn('p-2 transition active:scale-90', shuffle ? 'text-accent-hi' : 'text-muted hover:text-ink')}>
             <Shuffle size={20} />
           </button>
-          <button onClick={player.prev} className="p-2 text-ink/85 hover:text-ink transition">
+          <button onClick={player.prev} className="p-2 text-ink/85 hover:text-ink transition active:scale-90">
             <SkipBack size={26} fill="currentColor" />
           </button>
           <button
             onClick={player.toggle}
-            className="w-16 h-16 rounded-full bg-ink text-bg grid place-items-center hover:scale-105 transition shadow-xl"
+            className="w-16 h-16 rounded-full bg-ink text-bg grid place-items-center hover:scale-105 active:scale-95 transition shadow-xl"
           >
             {playing ? <Pause size={26} fill="currentColor" /> : <Play size={26} fill="currentColor" className="ml-1" />}
           </button>
-          <button onClick={() => player.next()} className="p-2 text-ink/85 hover:text-ink transition">
+          <button onClick={() => player.next()} className="p-2 text-ink/85 hover:text-ink transition active:scale-90">
             <SkipForward size={26} fill="currentColor" />
           </button>
-          <button onClick={player.cycleRepeat} className={cn('p-2 transition', repeat !== 'off' ? 'text-accent-hi' : 'text-muted hover:text-ink')}>
+          <button onClick={player.cycleRepeat} className={cn('p-2 transition active:scale-90', repeat !== 'off' ? 'text-accent-hi' : 'text-muted hover:text-ink')}>
             <RepeatIcon size={20} />
           </button>
         </div>
@@ -105,9 +112,9 @@ export default function NowPlaying() {
         <div className="flex items-center gap-5">
           <button
             onClick={() => lib.toggleLike(current)}
-            className={cn('p-2 transition', liked ? 'text-accent-hi' : 'text-muted hover:text-ink')}
+            className={cn('p-2 transition active:scale-90', liked ? 'text-accent-hi' : 'text-muted hover:text-ink')}
           >
-            <Heart size={20} fill={liked ? 'currentColor' : 'none'} />
+            <Heart size={20} fill={liked ? 'currentColor' : 'none'} className={liked ? 'heart-pop' : ''} />
           </button>
           {current.source !== 'local' &&
             (current.blobId ? (

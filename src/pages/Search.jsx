@@ -129,7 +129,7 @@ export default function Search() {
               <button
                 key={a.id}
                 onClick={() => playCollection(() => getAlbumSongs(a.id))}
-                className="glass rounded-xl p-3 text-left hover:bg-overlay/8 transition"
+                className="glass lift rounded-xl p-3 text-left hover:bg-overlay/8 transition"
               >
                 <Art src={a.artUrl} size="w-full aspect-square h-auto" rounded="rounded-lg" iconSize={24} className="mb-2" />
                 <p className="text-xs font-medium line-clamp-1">{a.name}</p>

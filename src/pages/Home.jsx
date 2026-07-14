@@ -54,13 +54,13 @@ export default function Home() {
 
   return (
     <div className="fade-up max-w-5xl mx-auto">
-      <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{greeting()}</h1>
+      <h1 className="font-display text-3xl md:text-4xl tracking-wide">{greeting()}</h1>
       <p className="text-muted text-sm mt-1">Your music, your vibe.</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
         <button
           onClick={() => setMoodOpen(true)}
-          className="glass rounded-2xl p-4 flex items-center gap-4 text-left hover:bg-overlay/8 transition group"
+          className="glass lift rounded-2xl p-4 flex items-center gap-4 text-left hover:bg-overlay/8 transition group"
         >
           <span className="shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent-hi grid place-items-center group-hover:scale-105 transition">
             <Sparkles size={20} className="text-white" />
@@ -70,7 +70,7 @@ export default function Home() {
             <p className="text-xs text-muted mt-0.5">Describe a vibe, get a playlist</p>
           </div>
         </button>
-        <Link to="/focus" className="glass rounded-2xl p-4 flex items-center gap-4 hover:bg-overlay/8 transition group">
+        <Link to="/focus" className="glass lift rounded-2xl p-4 flex items-center gap-4 hover:bg-overlay/8 transition group">
           <span className="shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent-hi grid place-items-center group-hover:scale-105 transition">
             <Timer size={20} className="text-white" />
           </span>
@@ -89,7 +89,7 @@ export default function Home() {
               <button
                 key={track.id}
                 onClick={() => player.playTrack(track, recents.map((r) => r.track))}
-                className="glass rounded-xl p-3 text-left hover:bg-overlay/8 transition group"
+                className="glass lift rounded-xl p-3 text-left hover:bg-overlay/8 transition group"
               >
                 <div className="relative mb-2.5">
                   <Art src={track.artUrl} size="w-full aspect-square h-auto" rounded="rounded-lg" iconSize={28} />

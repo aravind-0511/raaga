@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Users, X, Send, Crown, ChevronDown } from 'lucide-react'
 import { useSession } from '../store/sessionStore'
 import { usePlayer } from '../store/playerStore'
+import { useSwipeToDismiss } from '../lib/useSwipeToDismiss'
 import { cn } from '../lib/utils'
 
 export default function GroupSessionPanel() {
@@ -12,6 +13,8 @@ export default function GroupSessionPanel() {
   const [text, setText] = useState('')
   const [minimized, setMinimized] = useState(false)
   const chatEnd = useRef(null)
+  // swipe down minimizes (keeps the session alive) — leaving is an explicit X tap
+  const swipe = useSwipeToDismiss(() => setMinimized(true))
 
   useEffect(() => {
     chatEnd.current?.scrollIntoView({ behavior: 'smooth' })
@@ -47,8 +50,11 @@ export default function GroupSessionPanel() {
       {/* minimized floating pill — mobile only */}
       {minimized && (
         <button
-          onClick={() => setMinimized(false)}
-          className="md:hidden fixed bottom-32 right-4 z-40 glass rounded-full pl-3 pr-4 py-2 flex items-center gap-2 text-sm fade-up"
+          onClick={() => {
+            swipe.reset()
+            setMinimized(false)
+          }}
+          className="md:hidden fixed bottom-32 right-4 z-40 glass rounded-full pl-3 pr-4 py-2 flex items-center gap-2 text-sm fade-up active:scale-95 transition-transform"
           style={{ background: 'color-mix(in srgb, var(--color-surface-2) 92%, var(--color-ink) 3%)' }}
         >
           <Users size={15} className="text-accent-hi" /> Group · {memberCount}
@@ -69,8 +75,13 @@ export default function GroupSessionPanel() {
           // desktop: static side panel
           'md:static md:z-auto md:flex md:w-72 md:max-h-none md:rounded-none md:border-t-0 md:border-l md:bg-transparent md:backdrop-blur-none md:pb-0 md:animate-none'
         )}
+        style={swipe.style}
       >
-        <div className="flex items-center justify-between px-4 py-4 border-b border-line">
+        {/* drag handle — swipe down to minimize (mobile) */}
+        <div className="md:hidden flex justify-center pt-2.5 pb-0.5 shrink-0 touch-none" {...swipe.handlers}>
+          <span className="w-9 h-1 rounded-full bg-overlay/20" />
+        </div>
+        <div className="flex items-center justify-between px-4 py-4 border-b border-line touch-none md:touch-auto" {...swipe.handlers}>
           <div className="min-w-0">
             <h3 className="font-semibold text-sm flex items-center gap-1.5">
               <Users size={14} className="text-accent-hi" /> Group session

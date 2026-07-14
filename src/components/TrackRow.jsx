@@ -80,11 +80,11 @@ export default function TrackRow({ track, context, index, onRemove, showAlbum = 
           lib.toggleLike(track)
         }}
         className={cn(
-          'p-2 rounded-full transition',
+          'p-2 rounded-full transition active:scale-90',
           liked ? 'text-accent-hi' : 'text-muted opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-ink'
         )}
       >
-        <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
+        <Heart size={16} fill={liked ? 'currentColor' : 'none'} className={liked ? 'heart-pop' : ''} />
       </button>
 
       <span className="text-xs text-muted tabular-nums w-10 text-right">{formatTime(track.duration)}</span>

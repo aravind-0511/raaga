@@ -82,7 +82,7 @@ export default function Focus() {
           />
         </svg>
         <div className="text-center">
-          <p className="text-6xl font-bold tabular-nums tracking-tight">{mm}:{ss}</p>
+          <p className="font-condensed text-7xl font-semibold tabular-nums">{mm}:{ss}</p>
           <p className="text-xs uppercase tracking-widest text-muted mt-2">{MODES[mode].label}</p>
         </div>
       </div>
@@ -90,7 +90,7 @@ export default function Focus() {
       <div className="flex items-center gap-3 mt-8">
         <button
           onClick={() => setRunning(!running)}
-          className="flex items-center gap-2 bg-accent hover:bg-accent-hi text-white rounded-full px-7 py-2.5 font-medium transition"
+          className="flex items-center gap-2 bg-accent hover:bg-accent-hi text-white rounded-full px-7 py-2.5 font-medium transition active:scale-95"
         >
           {running ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" />}
           {running ? 'Pause' : 'Start'}
@@ -100,7 +100,7 @@ export default function Focus() {
             setSecondsLeft(total)
             setRunning(false)
           }}
-          className="p-3 rounded-full bg-overlay/6 hover:bg-overlay/12 text-muted hover:text-ink transition"
+          className="p-3 rounded-full bg-overlay/6 hover:bg-overlay/12 text-muted hover:text-ink transition active:scale-90"
           title="Reset"
         >
           <RotateCcw size={16} />
@@ -115,10 +115,10 @@ export default function Focus() {
               <p className="text-sm font-medium line-clamp-1">{current.title}</p>
               <p className="text-xs text-muted line-clamp-1">{current.artist}</p>
             </div>
-            <button onClick={player.toggle} className="w-10 h-10 rounded-full bg-ink text-bg grid place-items-center hover:scale-105 transition">
+            <button onClick={player.toggle} className="w-10 h-10 rounded-full bg-ink text-bg grid place-items-center hover:scale-105 active:scale-95 transition">
               {playing ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
             </button>
-            <button onClick={() => player.next()} className="p-2 text-muted hover:text-ink transition">
+            <button onClick={() => player.next()} className="p-2 text-muted hover:text-ink transition active:scale-90">
               <SkipForward size={18} fill="currentColor" />
             </button>
           </div>

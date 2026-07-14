@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Music, X } from 'lucide-react'
+import { useSwipeToDismiss } from '../lib/useSwipeToDismiss'
 import { cn } from '../lib/utils'
 
 export function Art({ src, size = 'w-12 h-12', rounded = 'rounded-lg', className = '', iconSize = 20 }) {
@@ -17,6 +18,7 @@ export function Art({ src, size = 'w-12 h-12', rounded = 'rounded-lg', className
 }
 
 export function Modal({ open, onClose, title, children, wide = false }) {
+  const swipe = useSwipeToDismiss(onClose)
   if (!open) return null
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-6" onClick={onClose}>
@@ -27,11 +29,15 @@ export function Modal({ open, onClose, title, children, wide = false }) {
           'glass relative w-full rounded-t-2xl md:rounded-2xl p-5 pb-[max(env(safe-area-inset-bottom),1.25rem)] md:pb-5 fade-up max-h-[85vh] overflow-y-auto bg-surface/95! text-ink',
           wide ? 'md:max-w-2xl' : 'md:max-w-md'
         )}
-        style={{ background: 'color-mix(in srgb, var(--color-surface) 92%, var(--color-ink) 3%)' }}
+        style={{ background: 'color-mix(in srgb, var(--color-surface) 92%, var(--color-ink) 3%)', ...swipe.style }}
       >
-        <div className="flex items-center justify-between mb-4">
+        {/* drag handle — swipe down to close (mobile) */}
+        <div className="md:hidden flex justify-center -mt-2 mb-2 -mx-5 touch-none" {...swipe.handlers}>
+          <span className="w-9 h-1 rounded-full bg-overlay/20" />
+        </div>
+        <div className="flex items-center justify-between mb-4 touch-none md:touch-auto" {...swipe.handlers}>
           <h2 className="text-lg font-semibold">{title}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-overlay/10 text-muted hover:text-ink transition">
+          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-overlay/10 text-muted hover:text-ink transition active:scale-90">
             <X size={18} />
           </button>
         </div>

@@ -56,9 +56,9 @@ export default function PlayerBar() {
               e.stopPropagation()
               useLibrary.getState().toggleLike(current)
             }}
-            className={cn('hidden md:block p-1.5 transition', liked ? 'text-accent-hi' : 'text-muted hover:text-ink')}
+            className={cn('hidden md:block p-1.5 transition active:scale-90', liked ? 'text-accent-hi' : 'text-muted hover:text-ink')}
           >
-            <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
+            <Heart size={16} fill={liked ? 'currentColor' : 'none'} className={liked ? 'heart-pop' : ''} />
           </button>
         </div>
 
@@ -67,21 +67,21 @@ export default function PlayerBar() {
           <div className="flex items-center gap-4">
             <button
               onClick={player.toggleShuffle}
-              className={cn('p-1.5 transition', shuffle ? 'text-accent-hi' : 'text-muted hover:text-ink')}
+              className={cn('p-1.5 transition active:scale-90', shuffle ? 'text-accent-hi' : 'text-muted hover:text-ink')}
               title="Shuffle"
             >
               <Shuffle size={16} />
             </button>
-            <button onClick={player.prev} className="p-1.5 text-ink/80 hover:text-ink transition" title="Previous">
+            <button onClick={player.prev} className="p-1.5 text-ink/80 hover:text-ink transition active:scale-90" title="Previous">
               <SkipBack size={18} fill="currentColor" />
             </button>
             <button
               onClick={player.toggle}
-              className="w-9 h-9 rounded-full bg-ink text-bg grid place-items-center hover:scale-105 transition"
+              className="w-9 h-9 rounded-full bg-ink text-bg grid place-items-center hover:scale-105 active:scale-95 transition"
             >
               {playing ? <Pause size={17} fill="currentColor" /> : <Play size={17} fill="currentColor" className="ml-0.5" />}
             </button>
-            <button onClick={() => player.next()} className="p-1.5 text-ink/80 hover:text-ink transition" title="Next">
+            <button onClick={() => player.next()} className="p-1.5 text-ink/80 hover:text-ink transition active:scale-90" title="Next">
               <SkipForward size={18} fill="currentColor" />
             </button>
             <button
@@ -103,13 +103,13 @@ export default function PlayerBar() {
 
         {/* mobile play/next/close */}
         <div className="flex md:hidden items-center gap-1">
-          <button onClick={player.toggle} className="w-10 h-10 rounded-full bg-ink text-bg grid place-items-center">
+          <button onClick={player.toggle} className="w-10 h-10 rounded-full bg-ink text-bg grid place-items-center active:scale-95 transition-transform">
             {playing ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" className="ml-0.5" />}
           </button>
-          <button onClick={() => player.next()} className="p-2 text-ink/80">
+          <button onClick={() => player.next()} className="p-2 text-ink/80 active:scale-90 transition-transform">
             <SkipForward size={20} fill="currentColor" />
           </button>
-          <button onClick={player.close} className="p-2 text-muted hover:text-ink transition" title="Close">
+          <button onClick={player.close} className="p-2 text-muted hover:text-ink transition active:scale-90" title="Close">
             <X size={19} />
           </button>
         </div>
