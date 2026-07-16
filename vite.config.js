@@ -15,7 +15,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg'],
+      includeAssets: ['hand-in-rock.png'],
       manifest: {
         name: 'Riff',
         short_name: 'Riff',
@@ -27,7 +27,9 @@ export default defineConfig({
         scope: base,
         start_url: base,
         icons: [
-          { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
+          // Not marked maskable — the art already fills most of the frame with
+          // little margin, so an OS safe-zone mask would crop into the hand.
+          { src: 'hand-in-rock.png', sizes: '597x418', type: 'image/png', purpose: 'any' },
         ],
       },
       workbox: {
