@@ -18,6 +18,7 @@ function EQSlider({ label, value, onChange, onReset }) {
         onChange={(e) => onChange(Number(e.target.value))}
         onDoubleClick={onReset}
         className="w-full"
+        style={{ '--fill': `${((value + 12) / 24) * 100}%` }}
       />
     </div>
   )
