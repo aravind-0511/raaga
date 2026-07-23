@@ -120,12 +120,18 @@ export const usePlayer = create((set, get) => ({
 
   _start: async (track, { fade = false } = {}) => {
     flushListenLog()
+    // pull bassGain/vocalGain from the library copy — `track` as passed in
+    // (e.g. from a queue) may be a stale snapshot without the latest EQ
+    const lib = useLibrary.getState().tracks.find((t) => t.id === track.id)
+    if (lib) track = { ...track, bassGain: lib.bassGain, vocalGain: lib.vocalGain }
     set({ current: track, position: 0, duration: track.duration || 0, advancing: false, loadError: null, peaks: null })
     try {
       const url = await resolveUrl(track)
       if (!url) throw new Error('No playable source for this track')
       const crossfade = fade ? useSettings.getState().crossfade : 0
       await engine.playUrl(url, { fadeSeconds: crossfade })
+      engine.setBass(track.bassGain ?? 0)
+      engine.setVocal(track.vocalGain ?? 0)
       listenStart = { track, startedAt: Date.now() }
       set({ playing: true })
       applyMediaSession(track)
@@ -232,6 +238,23 @@ export const usePlayer = create((set, get) => ({
     set({ queue: newQueue, index: i < index ? index - 1 : index })
   },
 
+  // A track was deleted from the library — its blob is gone, so it can't
+  // keep playing and can't be skipped to. Stop it if it's current (mirrors
+  // close()), and strip it out of both queues either way.
+  removeTrackEverywhere: (id) => {
+    const { current, queue, originalQueue, index } = get()
+    if (current?.id === id) {
+      get().close()
+      return
+    }
+    const qi = queue.findIndex((t) => t.id === id)
+    set({
+      queue: queue.filter((t) => t.id !== id),
+      originalQueue: originalQueue.filter((t) => t.id !== id),
+      index: qi !== -1 && qi < index ? index - 1 : index,
+    })
+  },
+
   setQueueOpen: (open) => set({ queueOpen: open }),
   setNowPlayingOpen: (open) => set({ nowPlayingOpen: open }),
 
@@ -314,6 +337,8 @@ export const usePlayer = create((set, get) => ({
       const url = await resolveUrl(cur)
       if (url) {
         await engine.loadPaused(url)
+        engine.setBass(cur.bassGain ?? 0)
+        engine.setVocal(cur.vocalGain ?? 0)
         if (saved.position > 1) engine.seek(saved.position)
         set({ position: saved.position || 0 })
       }

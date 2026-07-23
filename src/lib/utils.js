@@ -21,6 +21,17 @@ export function formatHours(ms) {
   return `${Math.round(ms / 60000)} min`
 }
 
+// Total duration across a collection (playlist/library), in words rather
+// than a clock — "2 hr 15 min" reads better for a sum than "2:15:00" does.
+export function formatDuration(totalSeconds) {
+  if (!Number.isFinite(totalSeconds) || totalSeconds <= 0) return '0 min'
+  const totalMin = Math.round(totalSeconds / 60)
+  const h = Math.floor(totalMin / 60)
+  const m = totalMin % 60
+  if (h > 0) return m > 0 ? `${h} hr ${m} min` : `${h} hr`
+  return `${m} min`
+}
+
 export function debounce(fn, wait) {
   let t
   return (...args) => {

@@ -6,7 +6,7 @@ import { usePlayer } from '../store/playerStore'
 import { useSession } from '../store/sessionStore'
 import TrackRow from '../components/TrackRow'
 import { Art, Modal, EmptyState } from '../components/ui'
-import { cn, formatTime } from '../lib/utils'
+import { cn, formatDuration } from '../lib/utils'
 import { ListMusic } from 'lucide-react'
 
 const EMPTY_PRESENCE = {}
@@ -94,7 +94,7 @@ export default function PlaylistDetail() {
           <h1 className="font-display text-3xl md:text-5xl tracking-wide line-clamp-2 mt-1">{playlist.name}</h1>
           {playlist.description && <p className="text-sm text-muted mt-1.5 line-clamp-2">{playlist.description}</p>}
           <p className="text-xs text-muted mt-2">
-            {items.length} tracks · {formatTime(totalSeconds)}
+            {items.length} tracks · {formatDuration(totalSeconds)}
           </p>
           {playlist.collaborative && (
             <div className="flex items-center gap-1.5 mt-2">

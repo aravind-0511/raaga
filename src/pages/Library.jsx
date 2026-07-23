@@ -6,7 +6,7 @@ import { usePlayer } from '../store/playerStore'
 import { TrackList } from '../components/TrackRow'
 import UploadDropzone from '../components/UploadDropzone'
 import { Art, EmptyState } from '../components/ui'
-import { cn } from '../lib/utils'
+import { cn, formatDuration } from '../lib/utils'
 
 const TABS = [
   { id: 'playlists', label: 'Playlists', icon: ListMusic },
@@ -23,6 +23,7 @@ export default function Library() {
   const player = usePlayer.getState()
   const navigate = useNavigate()
 
+  const totalSeconds = useMemo(() => lib.tracks.reduce((a, t) => a + (t.duration || 0), 0), [lib.tracks])
   const liked = useMemo(() => likedTracks(lib), [lib.likes, lib.tracks])
   const uploads = useMemo(() => lib.tracks.filter((t) => t.source === 'local'), [lib.tracks])
   const downloaded = useMemo(() => lib.tracks.filter((t) => t.source !== 'local' && t.blobId), [lib.tracks])
@@ -53,7 +54,10 @@ export default function Library() {
 
   return (
     <div className="fade-up max-w-5xl mx-auto">
-      <h1 className="font-display text-3xl md:text-4xl tracking-wide mb-5">Your Library</h1>
+      <h1 className="font-display text-3xl md:text-4xl tracking-wide mb-1">Your Library</h1>
+      <p className="text-sm text-muted mb-5">
+        {lib.tracks.length} song{lib.tracks.length === 1 ? '' : 's'} · {formatDuration(totalSeconds)}
+      </p>
 
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
         {TABS.map(({ id, label, icon: Icon }) => (
@@ -90,7 +94,16 @@ export default function Library() {
                 {pl.name}
                 {pl.collaborative && <Users size={12} className="text-accent-hi shrink-0" />}
               </p>
-              <p className="text-[11px] text-muted mt-0.5">{pl.trackIds.length} tracks</p>
+              <p className="text-[11px] text-muted mt-0.5">
+                {pl.trackIds.length} tracks
+                {(() => {
+                  const secs = pl.trackIds.reduce((a, tid) => {
+                    const t = lib.tracks.find((x) => x.id === tid)
+                    return a + (t?.duration || 0)
+                  }, 0)
+                  return secs > 0 ? ` · ${formatDuration(secs)}` : ''
+                })()}
+              </p>
             </Link>
           ))}
         </div>

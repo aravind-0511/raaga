@@ -41,10 +41,21 @@ class Slot {
     const ctx = this.engine.ensureCtx()
     if (!this.source && ctx) {
       this.source = ctx.createMediaElementSource(this.wiredEl)
+      this.bassFilter = ctx.createBiquadFilter()
+      this.bassFilter.type = 'lowshelf'
+      this.bassFilter.frequency.value = 200
+      this.bassFilter.gain.value = this.engine.bassDb
+      this.vocalFilter = ctx.createBiquadFilter()
+      this.vocalFilter.type = 'peaking'
+      this.vocalFilter.frequency.value = 2200
+      this.vocalFilter.Q.value = 1
+      this.vocalFilter.gain.value = this.engine.vocalDb
       this.analyser = ctx.createAnalyser()
       this.analyser.fftSize = 256
       this.analyser.smoothingTimeConstant = 0.82
-      this.source.connect(this.analyser)
+      this.source.connect(this.bassFilter)
+      this.bassFilter.connect(this.vocalFilter)
+      this.vocalFilter.connect(this.analyser)
       this.analyser.connect(ctx.destination)
     }
   }
@@ -159,6 +170,8 @@ class PlayerEngine {
     this.listeners = new Map()
     this.ctx = null
     this.volume = 1
+    this.bassDb = 0
+    this.vocalDb = 0
     this.slots = [new Slot(this, 'A'), new Slot(this, 'B')]
     this.activeIndex = 0
     this.preloadedUrl = null
@@ -307,6 +320,20 @@ class PlayerEngine {
   setVolume(v) {
     this.volume = Math.min(1, Math.max(0, v))
     this.slots.forEach((s) => s.applyVolume())
+  }
+  // Per-track bass/vocal EQ, in dB. Stored on the engine so a value set on
+  // one slot carries over when crossfade swaps the active slot.
+  setBass(db) {
+    this.bassDb = db
+    this.slots.forEach((s) => {
+      if (s.bassFilter) s.bassFilter.gain.value = db
+    })
+  }
+  setVocal(db) {
+    this.vocalDb = db
+    this.slots.forEach((s) => {
+      if (s.vocalFilter) s.vocalFilter.gain.value = db
+    })
   }
   stop() {
     this.slots.forEach((s) => s.clear())

@@ -5,6 +5,7 @@ import { useSession } from '../store/sessionStore'
 import { Art, Menu, MenuItem } from './ui'
 import WaveformSeekBar from './WaveformSeekBar'
 import Visualizer from './Visualizer'
+import SoundControls from './SoundControls'
 import { useSwipeToDismiss } from '../lib/useSwipeToDismiss'
 import { cn, formatTime } from '../lib/utils'
 
@@ -164,6 +165,8 @@ export default function NowPlaying() {
             <Users size={20} />
           </button>
         </div>
+
+        <SoundControls track={current} />
 
         {current.artUrl && <Visualizer bars={56} height={56} className="opacity-70" />}
 

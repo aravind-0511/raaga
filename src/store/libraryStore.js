@@ -98,6 +98,11 @@ export const useLibrary = create((set, get) => ({
       likes: Object.fromEntries(Object.entries(s.likes).filter(([k]) => k !== id)),
     }))
     for (const p of get().playlists) await putPlaylist(p)
+    // Deleting a track whose blob is now gone must not keep "playing" a
+    // track that no longer exists — stop it if it's current, and drop it
+    // from the live queue so skipping forward can't hit it either.
+    const { usePlayer } = await import('./playerStore')
+    usePlayer.getState().removeTrackEverywhere(id)
   },
 
   // Persist a catalog track's metadata locally (called on play/like/add)
@@ -123,6 +128,28 @@ export const useLibrary = create((set, get) => ({
     const { usePlayer } = await import('./playerStore')
     const cur = usePlayer.getState().current
     if (cur?.id === track.id) usePlayer.setState({ current: { ...cur, ...clean } })
+  },
+
+  // Per-track bass/vocal EQ (dB, -12..12). Persists so it's recalled the
+  // next time this track plays, and applies live immediately if it's the
+  // one currently playing.
+  setTrackEQ: async (track, { bass, vocal } = {}) => {
+    const clean = {}
+    if (typeof bass === 'number') clean.bassGain = bass
+    if (typeof vocal === 'number') clean.vocalGain = vocal
+    if (!Object.keys(clean).length) return
+    await get().saveRemoteTrack(track)
+    const base = (await getTrack(track.id)) || track
+    await putTrack({ ...base, ...clean })
+    set((s) => ({ tracks: s.tracks.map((t) => (t.id === track.id ? { ...t, ...clean } : t)) }))
+    const { usePlayer } = await import('./playerStore')
+    const cur = usePlayer.getState().current
+    if (cur?.id === track.id) {
+      usePlayer.setState({ current: { ...cur, ...clean } })
+      const { engine } = await import('../lib/player/engine')
+      if (typeof bass === 'number') engine.setBass(bass)
+      if (typeof vocal === 'number') engine.setVocal(vocal)
+    }
   },
 
   // ---- likes ----
