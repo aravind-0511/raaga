@@ -13,6 +13,11 @@ export function useSwipeToDismiss(onDismiss, { threshold = 90 } = {}) {
   const [dragging, setDragging] = useState(false)
 
   const onPointerDown = useCallback((e) => {
+    // Header rows spread these handlers over buttons (close/X, chevron, ...)
+    // too. Capturing the pointer here would retarget the matching pointerup
+    // (and the click it synthesizes) away from that button to this wrapper,
+    // silently swallowing the click — so skip starting a drag from one.
+    if (e.target.closest('button, a, input, textarea, select')) return
     startY.current = e.clientY
     active.current = true
     setDragging(true)
