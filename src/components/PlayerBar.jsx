@@ -1,14 +1,15 @@
-import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, Heart, ListMusic, Volume2, VolumeX, MonitorSmartphone, ChevronUp, Users, X } from 'lucide-react'
+import { Play, Pause, SkipBack, SkipForward, Shuffle, Heart, ListMusic, Volume2, VolumeX, MonitorSmartphone, ChevronUp, Users, X } from 'lucide-react'
 import { usePlayer } from '../store/playerStore'
 import { useLibrary } from '../store/libraryStore'
 import { useSettings } from '../store/settingsStore'
 import { useSession } from '../store/sessionStore'
 import { Art, Menu, MenuItem } from './ui'
 import WaveformSeekBar from './WaveformSeekBar'
+import RepeatControl from './RepeatControl'
 import { cn, formatTime } from '../lib/utils'
 
 export default function PlayerBar() {
-  const { current, playing, position, duration, shuffle, repeat, peaks, queueOpen, loadError } = usePlayer()
+  const { current, playing, position, duration, shuffle, peaks, queueOpen, loadError } = usePlayer()
   const player = usePlayer.getState()
   const liked = useLibrary((s) => (current ? !!s.likes[current.id] : false))
   const volume = useSettings((s) => s.volume)
@@ -25,8 +26,6 @@ export default function PlayerBar() {
       </div>
     ) : null
   }
-
-  const RepeatIcon = repeat === 'one' ? Repeat1 : Repeat
 
   return (
     <div className="glass border-t border-line px-3 md:px-5 py-2.5 z-30 relative">
@@ -84,13 +83,7 @@ export default function PlayerBar() {
             <button onClick={() => player.next()} className="p-1.5 text-ink/80 hover:text-ink transition active:scale-90" title="Next">
               <SkipForward size={18} fill="currentColor" />
             </button>
-            <button
-              onClick={player.cycleRepeat}
-              className={cn('p-1.5 transition', repeat !== 'off' ? 'text-accent-hi' : 'text-muted hover:text-ink')}
-              title={`Repeat: ${repeat}`}
-            >
-              <RepeatIcon size={16} />
-            </button>
+            <RepeatControl size={16} />
           </div>
           <div className="flex items-center gap-2 w-full max-w-xl">
             <span className="text-[11px] text-muted tabular-nums w-9 text-right">{formatTime(position)}</span>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Play, Pencil, Trash2, Users, GripVertical, ImagePlus, Check, ChevronUp, ChevronDown } from 'lucide-react'
+import { Play, Shuffle, Pencil, Trash2, Users, GripVertical, ImagePlus, Check, ChevronUp, ChevronDown } from 'lucide-react'
 import { useLibrary } from '../store/libraryStore'
 import { usePlayer } from '../store/playerStore'
 import { useSession } from '../store/sessionStore'
@@ -20,6 +20,7 @@ export default function PlaylistDetail() {
   const lib = useLibrary.getState()
   const session = useSession.getState()
   const player = usePlayer.getState()
+  const shuffleOn = usePlayer((s) => s.shuffle)
 
   const [editOpen, setEditOpen] = useState(false)
   const [name, setName] = useState('')
@@ -120,6 +121,18 @@ export default function PlaylistDetail() {
                 className="flex items-center gap-1.5 text-sm bg-accent hover:bg-accent-hi text-white rounded-full px-5 py-2 font-medium transition"
               >
                 <Play size={14} fill="currentColor" /> Play
+              </button>
+            )}
+            {items.length > 0 && (
+              <button
+                onClick={() => player.shufflePlayList(items)}
+                title="Shuffle play"
+                className={cn(
+                  'p-2.5 rounded-full transition',
+                  shuffleOn ? 'bg-accent/25 text-accent-hi' : 'bg-overlay/6 text-muted hover:text-ink hover:bg-overlay/12'
+                )}
+              >
+                <Shuffle size={15} />
               </button>
             )}
             <button

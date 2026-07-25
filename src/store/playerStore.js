@@ -98,6 +98,8 @@ export const usePlayer = create((set, get) => ({
   loadError: null,
   queueOpen: false,
   nowPlayingOpen: false,
+  sleepTimerEndsAt: null,
+  _sleepTimerId: null,
 
   // Play `track` in the context of `context` (playlist/album/search results).
   playTrack: async (track, context) => {
@@ -116,6 +118,15 @@ export const usePlayer = create((set, get) => ({
     if (!track) return
     set({ index: i })
     await get()._start(track, { fade: false })
+  },
+
+  // Shuffle-play an arbitrary list (a whole library or playlist "shuffle"
+  // button) — turns shuffle on and starts from a random track in it.
+  shufflePlayList: async (list) => {
+    if (!list.length) return
+    if (!get().shuffle) set({ shuffle: true })
+    const track = list[Math.floor(Math.random() * list.length)]
+    await get().playTrack(track, list)
   },
 
   _start: async (track, { fade = false } = {}) => {
@@ -217,10 +228,7 @@ export const usePlayer = create((set, get) => ({
     }
   },
 
-  cycleRepeat: () => {
-    const order = ['off', 'all', 'one']
-    set({ repeat: order[(order.indexOf(get().repeat) + 1) % 3] })
-  },
+  setRepeat: (mode) => set({ repeat: mode }),
 
   addToQueue: (track, { next = false } = {}) => {
     const { queue, index } = get()
@@ -258,6 +266,22 @@ export const usePlayer = create((set, get) => ({
   setQueueOpen: (open) => set({ queueOpen: open }),
   setNowPlayingOpen: (open) => set({ nowPlayingOpen: open }),
 
+  // Sleep timer: pause playback once `minutes` elapses, regardless of which
+  // screen is open (the timeout lives here, not in a component).
+  setSleepTimer: (minutes) => {
+    get().clearSleepTimer()
+    const id = setTimeout(() => {
+      engine.pause()
+      set({ sleepTimerEndsAt: null, _sleepTimerId: null })
+    }, minutes * 60000)
+    set({ sleepTimerEndsAt: Date.now() + minutes * 60000, _sleepTimerId: id })
+  },
+  clearSleepTimer: () => {
+    const id = get()._sleepTimerId
+    if (id) clearTimeout(id)
+    set({ sleepTimerEndsAt: null, _sleepTimerId: null })
+  },
+
   // full state restore (Connect handoff / group session join)
   restoreState: async ({ queue, index, position, playing }) => {
     const track = queue[index]
@@ -279,6 +303,7 @@ export const usePlayer = create((set, get) => ({
     flushListenLog()
     engine.stop()
     clearSession()
+    get().clearSleepTimer()
     set({
       current: null,
       queue: [],

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
-import { Heart, ListMusic, Mic2, Disc3, UploadCloud, Plus, Play, Users, HardDriveDownload } from 'lucide-react'
+import { Heart, ListMusic, Mic2, Disc3, UploadCloud, Plus, Play, Shuffle, Users, HardDriveDownload } from 'lucide-react'
 import { useLibrary, likedTracks } from '../store/libraryStore'
 import { usePlayer } from '../store/playerStore'
 import { TrackList } from '../components/TrackRow'
@@ -21,6 +21,7 @@ export default function Library() {
   const tab = params.get('tab') || 'playlists'
   const lib = useLibrary()
   const player = usePlayer.getState()
+  const shuffleOn = usePlayer((s) => s.shuffle)
   const navigate = useNavigate()
 
   const totalSeconds = useMemo(() => lib.tracks.reduce((a, t) => a + (t.duration || 0), 0), [lib.tracks])
@@ -54,7 +55,20 @@ export default function Library() {
 
   return (
     <div className="fade-up max-w-5xl mx-auto">
-      <h1 className="font-display text-3xl md:text-4xl tracking-wide mb-1">Your Library</h1>
+      <div className="flex items-center justify-between gap-3 mb-1">
+        <h1 className="font-display text-3xl md:text-4xl tracking-wide">Your Library</h1>
+        <button
+          onClick={() => player.shufflePlayList(lib.tracks)}
+          disabled={!lib.tracks.length}
+          title="Shuffle play your whole library"
+          className={cn(
+            'p-2.5 rounded-full transition active:scale-90 disabled:opacity-30 disabled:pointer-events-none',
+            shuffleOn ? 'bg-accent/25 text-accent-hi' : 'bg-overlay/6 text-muted hover:text-ink hover:bg-overlay/12'
+          )}
+        >
+          <Shuffle size={17} />
+        </button>
+      </div>
       <p className="text-sm text-muted mb-5">
         {lib.tracks.length} song{lib.tracks.length === 1 ? '' : 's'} · {formatDuration(totalSeconds)}
       </p>

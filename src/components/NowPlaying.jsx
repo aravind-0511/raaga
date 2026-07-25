@@ -1,4 +1,4 @@
-import { ChevronDown, Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, Heart, Download, ListMusic, Check, Users, MonitorSmartphone } from 'lucide-react'
+import { ChevronDown, Play, Pause, SkipBack, SkipForward, Shuffle, Heart, Download, ListMusic, Check, Users, MonitorSmartphone } from 'lucide-react'
 import { usePlayer } from '../store/playerStore'
 import { useLibrary } from '../store/libraryStore'
 import { useSession } from '../store/sessionStore'
@@ -6,11 +6,13 @@ import { Art, Menu, MenuItem } from './ui'
 import WaveformSeekBar from './WaveformSeekBar'
 import Visualizer from './Visualizer'
 import SoundControls from './SoundControls'
+import RepeatControl from './RepeatControl'
+import SleepTimerControl from './SleepTimerControl'
 import { useSwipeToDismiss } from '../lib/useSwipeToDismiss'
 import { cn, formatTime } from '../lib/utils'
 
 export default function NowPlaying() {
-  const { current, playing, position, duration, shuffle, repeat, peaks, nowPlayingOpen, queue, index } = usePlayer()
+  const { current, playing, position, duration, shuffle, peaks, nowPlayingOpen, queue, index } = usePlayer()
   const player = usePlayer.getState()
   const liked = useLibrary((s) => (current ? !!s.likes[current.id] : false))
   const downloading = useLibrary((s) => (current ? s.downloadingIds.has(current.id) : false))
@@ -22,7 +24,6 @@ export default function NowPlaying() {
   const swipe = useSwipeToDismiss(() => usePlayer.getState().setNowPlayingOpen(false))
 
   if (!nowPlayingOpen || !current) return null
-  const RepeatIcon = repeat === 'one' ? Repeat1 : Repeat
   const upNext = queue[index + 1]
 
   return (
@@ -50,10 +51,7 @@ export default function NowPlaying() {
         </button>
         <span className="text-[11px] uppercase tracking-widest text-muted">Now Playing</span>
         <button
-          onClick={() => {
-            player.setNowPlayingOpen(false)
-            player.setQueueOpen(true)
-          }}
+          onClick={() => player.setQueueOpen(true)}
           className="p-2 rounded-full hover:bg-overlay/10 text-muted hover:text-ink transition"
         >
           <ListMusic size={20} />
@@ -105,9 +103,7 @@ export default function NowPlaying() {
           <button onClick={() => player.next()} className="p-2 text-ink/85 hover:text-ink transition active:scale-90">
             <SkipForward size={26} fill="currentColor" />
           </button>
-          <button onClick={player.cycleRepeat} className={cn('p-2 transition active:scale-90', repeat !== 'off' ? 'text-accent-hi' : 'text-muted hover:text-ink')}>
-            <RepeatIcon size={20} />
-          </button>
+          <RepeatControl size={20} />
         </div>
 
         <div className="flex items-center gap-5">
@@ -164,6 +160,8 @@ export default function NowPlaying() {
           >
             <Users size={20} />
           </button>
+
+          <SleepTimerControl />
         </div>
 
         <SoundControls track={current} />

@@ -12,16 +12,18 @@ export default function QueueDrawer() {
 
   return (
     <>
-      {/* mobile backdrop (desktop shows it inline as a side panel) */}
+      {/* mobile backdrop (desktop shows it inline as a side panel) — z-[45] so
+          the drawer layers above Now Playing (z-40) when both are open,
+          since opening the queue no longer closes the song details view */}
       <div
-        className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+        className="md:hidden fixed inset-0 z-[45] bg-black/60 backdrop-blur-sm"
         onClick={() => player.setQueueOpen(false)}
       />
       <aside
         className={cn(
           'flex flex-col border-line shrink-0 fade-up',
           // mobile: bottom sheet overlay
-          'fixed inset-x-0 bottom-0 z-40 w-full max-h-[75vh] rounded-t-2xl border-t bg-surface/95 backdrop-blur-xl pb-[max(env(safe-area-inset-bottom),0px)]',
+          'fixed inset-x-0 bottom-0 z-[45] w-full max-h-[75vh] rounded-t-2xl border-t bg-surface/95 backdrop-blur-xl pb-[max(env(safe-area-inset-bottom),0px)]',
           // desktop: static side panel
           'md:static md:z-auto md:w-80 md:max-h-none md:rounded-none md:border-t-0 md:border-l md:bg-transparent md:backdrop-blur-none md:pb-0'
         )}
