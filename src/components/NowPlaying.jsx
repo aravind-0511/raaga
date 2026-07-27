@@ -1,4 +1,4 @@
-import { ChevronDown, Play, Pause, SkipBack, SkipForward, Shuffle, Heart, Download, ListMusic, Check, Users, MonitorSmartphone } from 'lucide-react'
+import { ChevronDown, Play, Pause, SkipBack, SkipForward, Shuffle, Heart, Download, ListMusic, ListPlus, Plus, Check, Users, MonitorSmartphone } from 'lucide-react'
 import { usePlayer } from '../store/playerStore'
 import { useLibrary } from '../store/libraryStore'
 import { useSession } from '../store/sessionStore'
@@ -16,6 +16,7 @@ export default function NowPlaying() {
   const player = usePlayer.getState()
   const liked = useLibrary((s) => (current ? !!s.likes[current.id] : false))
   const downloading = useLibrary((s) => (current ? s.downloadingIds.has(current.id) : false))
+  const playlists = useLibrary((s) => s.playlists)
   const lib = useLibrary.getState()
   const peers = useSession((s) => s.peers)
   const group = useSession((s) => s.group)
@@ -127,6 +128,36 @@ export default function NowPlaying() {
                 <Download size={20} />
               </button>
             ))}
+
+          <Menu
+            align="right"
+            button={
+              <button className="p-2 transition text-muted hover:text-ink" title="Add to playlist">
+                <ListPlus size={20} />
+              </button>
+            }
+          >
+            {playlists.length === 0 && (
+              <MenuItem
+                icon={Plus}
+                onClick={async () => {
+                  const pl = await lib.createPlaylist({ name: 'My Playlist' })
+                  lib.addToPlaylist(pl.id, current)
+                }}
+              >
+                New playlist with this track
+              </MenuItem>
+            )}
+            {playlists.slice(0, 6).map((pl) => (
+              <MenuItem
+                key={pl.id}
+                icon={pl.trackIds.includes(current.id) ? Check : Plus}
+                onClick={() => lib.addToPlaylist(pl.id, current)}
+              >
+                Add to “{pl.name}”
+              </MenuItem>
+            ))}
+          </Menu>
 
           <Menu
             align="right"

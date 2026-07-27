@@ -2,18 +2,30 @@ import { useRef, useState } from 'react'
 import { UploadCloud, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { useLibrary } from '../store/libraryStore'
 import { ACCEPTED_TYPES } from '../lib/metadata'
+import { Modal } from './ui'
 import { cn } from '../lib/utils'
 
 export default function UploadDropzone({ compact = false }) {
   const inputRef = useRef(null)
   const [dragOver, setDragOver] = useState(false)
   const [result, setResult] = useState(null) // { added, skipped } — brief confirmation
+  const [dupConfirm, setDupConfirm] = useState(null) // { file, meta, existing, resolve }
   const uploading = useLibrary((s) => s.uploading)
   const addFiles = useLibrary((s) => s.addFiles)
 
+  // Blocks addFiles' loop until the user answers — resolves true to add the
+  // duplicate anyway, false to skip it.
+  const onDuplicate = ({ file, meta, existing }) =>
+    new Promise((resolve) => setDupConfirm({ file, meta, existing, resolve }))
+
+  const answerDuplicate = (proceed) => {
+    dupConfirm?.resolve(proceed)
+    setDupConfirm(null)
+  }
+
   const run = async (fileList) => {
     setResult(null)
-    const res = await addFiles(fileList)
+    const res = await addFiles(fileList, { onDuplicate })
     setResult(res)
     setTimeout(() => setResult(null), 6000)
   }
@@ -25,6 +37,7 @@ export default function UploadDropzone({ compact = false }) {
   }
 
   return (
+    <>
     <div
       onClick={() => inputRef.current?.click()}
       onDragOver={(e) => {
@@ -83,5 +96,27 @@ export default function UploadDropzone({ compact = false }) {
         </div>
       )}
     </div>
+
+    <Modal open={!!dupConfirm} onClose={() => answerDuplicate(false)} title="Possible duplicate">
+      <p className="text-sm text-muted mb-4">
+        <span className="text-ink/85">“{dupConfirm?.file.name}”</span> looks like it's already in your library as{' '}
+        <span className="text-ink/85">“{dupConfirm?.existing.title}”</span>. Add it anyway?
+      </p>
+      <div className="flex gap-2">
+        <button
+          onClick={() => answerDuplicate(false)}
+          className="flex-1 rounded-xl bg-overlay/6 hover:bg-overlay/12 text-ink font-medium py-2.5 transition"
+        >
+          Skip
+        </button>
+        <button
+          onClick={() => answerDuplicate(true)}
+          className="flex-1 rounded-xl bg-accent hover:bg-accent-hi text-white font-medium py-2.5 transition"
+        >
+          Add anyway
+        </button>
+      </div>
+    </Modal>
+    </>
   )
 }

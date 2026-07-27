@@ -50,7 +50,11 @@ export const useLibrary = create((set, get) => ({
   },
 
   // ---- uploads (any audio/video file; playback uses audio only) ----
-  addFiles: async (fileList) => {
+  // `onDuplicate({ file, meta, existing })` is optional — when a file looks
+  // like it's already in the library, it's awaited before adding so the
+  // caller can prompt the user and resolve true (add anyway) / false (skip).
+  // Without it, duplicates are skipped silently.
+  addFiles: async (fileList, { onDuplicate } = {}) => {
     const files = [...fileList].filter(isMediaFile)
     if (!files.length) return { added: 0, skipped: fileList.length }
     set({ uploading: { done: 0, total: files.length, current: files[0].name } })
@@ -59,6 +63,20 @@ export const useLibrary = create((set, get) => ({
       set((s) => ({ uploading: { ...s.uploading, current: file.name } }))
       try {
         const meta = await extractMetadata(file)
+        const existing = get().tracks.find(
+          (t) =>
+            t.fileName === file.name ||
+            (meta.title &&
+              t.title.trim().toLowerCase() === meta.title.trim().toLowerCase() &&
+              (t.artist || '').trim().toLowerCase() === (meta.artist || '').trim().toLowerCase())
+        )
+        if (existing) {
+          const proceed = onDuplicate ? await onDuplicate({ file, meta, existing }) : false
+          if (!proceed) {
+            set((s) => ({ uploading: { ...s.uploading, done: s.uploading.done + 1 } }))
+            continue
+          }
+        }
         const id = uid('local:')
         const blobId = 'blob:' + id
         await putBlob(blobId, file)

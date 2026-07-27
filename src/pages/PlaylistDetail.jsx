@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Play, Shuffle, Pencil, Trash2, Users, GripVertical, ImagePlus, Check, ChevronUp, ChevronDown } from 'lucide-react'
+import { Play, Shuffle, Pencil, Trash2, Users, GripVertical, ImagePlus, Check, ChevronUp, ChevronDown, Search as SearchIcon } from 'lucide-react'
 import { useLibrary } from '../store/libraryStore'
 import { usePlayer } from '../store/playerStore'
 import { useSession } from '../store/sessionStore'
@@ -25,6 +25,7 @@ export default function PlaylistDetail() {
   const [editOpen, setEditOpen] = useState(false)
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+  const [query, setQuery] = useState('')
   const coverInput = useRef(null)
   const dragFrom = useRef(null)
   const [dragOverIndex, setDragOverIndex] = useState(null)
@@ -34,6 +35,8 @@ export default function PlaylistDetail() {
     [playlist, tracks]
   )
   const totalSeconds = items.reduce((a, t) => a + (t.duration || 0), 0)
+  const q = query.trim().toLowerCase()
+  const filteredItems = q ? items.filter((t) => `${t.title} ${t.artist} ${t.album || ''}`.toLowerCase().includes(q)) : items
 
   // collaborative presence heartbeat while this page is open
   useEffect(() => {
@@ -170,59 +173,80 @@ export default function PlaylistDetail() {
         </div>
       </div>
 
+      {items.length > 0 && (
+        <div className="relative mb-4">
+          <SearchIcon size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search this playlist"
+            className="w-full rounded-full bg-overlay/6 border border-line pl-10 pr-4 py-2 text-sm outline-none focus:border-accent-hi/60 transition"
+          />
+        </div>
+      )}
+
       {items.length === 0 && (
         <EmptyState icon={ListMusic} title="Nothing here yet" hint="Use the ⋯ menu on any track — in Search, Browse, or your Library — to add it to this playlist." />
       )}
 
+      {items.length > 0 && q && filteredItems.length === 0 && (
+        <EmptyState icon={SearchIcon} title="No matches" hint={`No tracks match “${query}”.`} />
+      )}
+
       <div className="flex flex-col gap-0.5">
-        {items.map((t, i) => (
-          <div
-            key={t.id + i}
-            draggable
-            onDragStart={() => (dragFrom.current = i)}
-            onDragOver={(e) => {
-              e.preventDefault()
-              setDragOverIndex(i)
-            }}
-            onDrop={() => {
-              reorder(dragFrom.current, i)
-              dragFrom.current = null
-              setDragOverIndex(null)
-            }}
-            onDragEnd={() => setDragOverIndex(null)}
-            className={cn('flex items-center gap-1 rounded-xl transition', dragOverIndex === i && 'outline-2 outline-accent-hi/60')}
-          >
-            {/* desktop: drag handle */}
-            <GripVertical size={14} className="hidden md:block text-muted/50 cursor-grab shrink-0 ml-1" />
-            {/* mobile: up/down buttons (HTML5 drag doesn't work on touch) */}
-            <div className="md:hidden flex flex-col shrink-0 -my-1">
-              <button
-                onClick={() => reorder(i, i - 1)}
-                disabled={i === 0}
-                className="p-0.5 text-muted disabled:opacity-25 active:text-ink"
-                title="Move up"
-              >
-                <ChevronUp size={16} />
-              </button>
-              <button
-                onClick={() => reorder(i, i + 1)}
-                disabled={i === items.length - 1}
-                className="p-0.5 text-muted disabled:opacity-25 active:text-ink"
-                title="Move down"
-              >
-                <ChevronDown size={16} />
-              </button>
+        {filteredItems.map((t) => {
+          // real position in the unfiltered playlist — reorder/remove act on
+          // that, not the (possibly filtered) row order shown here
+          const i = playlist.trackIds.indexOf(t.id)
+          return (
+            <div
+              key={t.id + i}
+              draggable
+              onDragStart={() => (dragFrom.current = i)}
+              onDragOver={(e) => {
+                e.preventDefault()
+                setDragOverIndex(i)
+              }}
+              onDrop={() => {
+                reorder(dragFrom.current, i)
+                dragFrom.current = null
+                setDragOverIndex(null)
+              }}
+              onDragEnd={() => setDragOverIndex(null)}
+              className={cn('flex items-center gap-1 rounded-xl transition', dragOverIndex === i && 'outline-2 outline-accent-hi/60')}
+            >
+              {/* desktop: drag handle */}
+              <GripVertical size={14} className="hidden md:block text-muted/50 cursor-grab shrink-0 ml-1" />
+              {/* mobile: up/down buttons (HTML5 drag doesn't work on touch) */}
+              <div className="md:hidden flex flex-col shrink-0 -my-1">
+                <button
+                  onClick={() => reorder(i, i - 1)}
+                  disabled={i === 0}
+                  className="p-0.5 text-muted disabled:opacity-25 active:text-ink"
+                  title="Move up"
+                >
+                  <ChevronUp size={16} />
+                </button>
+                <button
+                  onClick={() => reorder(i, i + 1)}
+                  disabled={i === items.length - 1}
+                  className="p-0.5 text-muted disabled:opacity-25 active:text-ink"
+                  title="Move down"
+                >
+                  <ChevronDown size={16} />
+                </button>
+              </div>
+              <div className="flex-1 min-w-0">
+                <TrackRow
+                  track={t}
+                  context={items}
+                  index={i}
+                  onRemove={() => lib.updatePlaylist(id, { trackIds: playlist.trackIds.filter((_, x) => x !== i) })}
+                />
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <TrackRow
-                track={t}
-                context={items}
-                index={i}
-                onRemove={() => lib.updatePlaylist(id, { trackIds: playlist.trackIds.filter((_, x) => x !== i) })}
-              />
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit playlist">
