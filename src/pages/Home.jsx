@@ -54,7 +54,7 @@ export default function Home() {
 
   return (
     <div className="fade-up max-w-5xl mx-auto">
-      <h1 className="font-display text-3xl md:text-4xl tracking-wide">{greeting()}</h1>
+      <h1 className="font-logo font-semibold text-4xl md:text-5xl tracking-tight">{greeting()}</h1>
       <p className="text-muted text-sm mt-1">Your music, your vibe.</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">

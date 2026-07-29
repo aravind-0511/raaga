@@ -46,7 +46,12 @@ export default function App() {
 
   if (!ready) {
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="h-full flex flex-col items-center justify-center gap-6">
+        <img
+          src={`${import.meta.env.BASE_URL}logo.png`}
+          alt="Riff"
+          className="logo-wordmark h-12 object-contain fade-up"
+        />
         <div className="eq-bars flex items-end gap-1 h-8">
           <span /><span /><span />
         </div>

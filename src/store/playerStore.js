@@ -192,7 +192,9 @@ export const usePlayer = create((set, get) => ({
       if (repeat === 'all') nextIndex = 0
       else if (manual) nextIndex = 0
       else {
-        set({ playing: false })
+        // end of queue, no repeat — stop, and clear the advance guard so a
+        // later manual play isn't blocked by a stuck `advancing` flag
+        set({ playing: false, advancing: false })
         engine.pause()
         return
       }
@@ -244,6 +246,22 @@ export const usePlayer = create((set, get) => ({
     if (i === index) return
     const newQueue = queue.filter((_, x) => x !== i)
     set({ queue: newQueue, index: i < index ? index - 1 : index })
+  },
+
+  // Drag-reorder within the live queue. Keeps `index` pointing at the same
+  // currently-playing track as rows shift around it.
+  moveInQueue: (from, to) => {
+    const { queue, index } = get()
+    if (from == null || to == null || from === to) return
+    if (from < 0 || to < 0 || from >= queue.length || to >= queue.length) return
+    const newQueue = [...queue]
+    const [moved] = newQueue.splice(from, 1)
+    newQueue.splice(to, 0, moved)
+    let newIndex = index
+    if (from === index) newIndex = to
+    else if (from < index && to >= index) newIndex = index - 1
+    else if (from > index && to <= index) newIndex = index + 1
+    set({ queue: newQueue, index: newIndex })
   },
 
   // A track was deleted from the library — its blob is gone, so it can't
@@ -386,6 +404,13 @@ engine.on('time', ({ position, duration }) => {
   if (s.repeat !== 'one' && hasNext && crossfade > 0 && remaining <= crossfade + 0.1) {
     usePlayer.setState({ advancing: true })
     s.next({ fade: true, manual: false })
+  } else if (s.repeat !== 'one' && hasNext && crossfade === 0 && remaining <= 0.25) {
+    // Safety net: the media element's native 'ended' event is unreliable for
+    // some sources (it occasionally never fires, dead-ending a track on its
+    // final frame). While we still know we're playing, advance a hair early.
+    // The 'ended' handler is guarded by `advancing`, so this never double-fires.
+    usePlayer.setState({ advancing: true })
+    s.next({ fade: false, manual: false })
   } else if (remaining <= 14 && gapless && s.repeat !== 'one' && hasNext && crossfade === 0) {
     const nextTrack = s.queue[(s.index + 1) % s.queue.length]
     if (nextTrack) resolveUrl(nextTrack).then((url) => url && engine.preloadUrl(url))
@@ -394,11 +419,13 @@ engine.on('time', ({ position, duration }) => {
 
 engine.on('ended', () => {
   const s = usePlayer.getState()
+  if (s.advancing) return // the time-based safety net already started the advance
   if (s.repeat === 'one') {
     engine.seek(0)
     engine.resume()
     return
   }
+  usePlayer.setState({ advancing: true })
   s.next({ fade: false, manual: false })
 })
 

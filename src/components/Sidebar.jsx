@@ -38,7 +38,13 @@ export default function Sidebar() {
           alt=""
           className="w-8 h-8 rounded-lg accent-glow shrink-0 object-cover"
         />
-        {!collapsed && <span className="font-display text-xl tracking-wide flex-1">Riff</span>}
+        {!collapsed && (
+          <img
+            src={`${import.meta.env.BASE_URL}logo.png`}
+            alt="Riff"
+            className="logo-wordmark h-6 flex-1 object-contain object-left"
+          />
+        )}
         {!collapsed && (
           <button
             onClick={toggleTheme}

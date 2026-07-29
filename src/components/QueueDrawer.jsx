@@ -1,4 +1,5 @@
-import { X, ListMusic } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { X, ListMusic, GripVertical, ChevronUp, ChevronDown } from 'lucide-react'
 import { usePlayer } from '../store/playerStore'
 import { Art, EmptyState } from './ui'
 import { useSwipeToDismiss } from '../lib/useSwipeToDismiss'
@@ -8,11 +9,13 @@ export default function QueueDrawer() {
   const { queue, index, queueOpen } = usePlayer()
   const player = usePlayer.getState()
   const swipe = useSwipeToDismiss(() => usePlayer.getState().setQueueOpen(false))
+  const dragFrom = useRef(null)
+  const [dragOver, setDragOver] = useState(null)
   if (!queueOpen) return null
 
   return (
     <>
-      {/* mobile backdrop (desktop shows it inline as a side panel) — z-[45] so
+      {/* mobile backdrop (desktop shows it inline as a side panel) — z-45 so
           the drawer layers above Now Playing (z-40) when both are open,
           since opening the queue no longer closes the song details view */}
       <div
@@ -47,26 +50,73 @@ export default function QueueDrawer() {
           {queue.map((t, i) => (
             <div
               key={t.id + i}
-              onClick={() => player.playAt(i)}
+              onDragOver={(e) => {
+                e.preventDefault()
+                setDragOver(i)
+              }}
+              onDrop={() => {
+                player.moveInQueue(dragFrom.current, i)
+                dragFrom.current = null
+                setDragOver(null)
+              }}
+              onDragEnd={() => {
+                dragFrom.current = null
+                setDragOver(null)
+              }}
               className={cn(
-                'group flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition',
+                'group flex items-center gap-1.5 px-2 py-2 rounded-lg transition',
                 i === index ? 'bg-overlay/8' : 'hover:bg-overlay/5',
-                i < index && 'opacity-50'
+                i < index && 'opacity-50',
+                dragOver === i && 'outline-2 outline-accent-hi/60'
               )}
             >
-              <Art src={t.artUrl} size="w-9 h-9" rounded="rounded-md" iconSize={14} />
-              <div className="flex-1 min-w-0">
-                <p className={cn('text-[13px] font-medium line-clamp-1', i === index && 'text-accent-hi')}>{t.title}</p>
-                <p className="text-[11px] text-muted line-clamp-1">{t.artist}</p>
+              {/* desktop: drag handle — grab and pull a track to reorder */}
+              <span
+                draggable
+                onDragStart={(e) => {
+                  dragFrom.current = i
+                  e.dataTransfer.effectAllowed = 'move'
+                }}
+                title="Drag to reorder"
+                className="hidden md:flex text-muted/40 hover:text-muted cursor-grab active:cursor-grabbing shrink-0 touch-none"
+              >
+                <GripVertical size={15} />
+              </span>
+              {/* mobile: up/down buttons (HTML5 drag doesn't work on touch) */}
+              <div className="md:hidden flex flex-col shrink-0 -my-1">
+                <button
+                  onClick={() => player.moveInQueue(i, i - 1)}
+                  disabled={i === 0}
+                  className="p-0.5 text-muted disabled:opacity-25 active:text-ink"
+                  title="Move up"
+                >
+                  <ChevronUp size={15} />
+                </button>
+                <button
+                  onClick={() => player.moveInQueue(i, i + 1)}
+                  disabled={i === queue.length - 1}
+                  className="p-0.5 text-muted disabled:opacity-25 active:text-ink"
+                  title="Move down"
+                >
+                  <ChevronDown size={15} />
+                </button>
               </div>
-              <span className="text-[11px] text-muted tabular-nums">{formatTime(t.duration)}</span>
+
+              <div className="flex-1 min-w-0 flex items-center gap-2.5 cursor-pointer" onClick={() => player.playAt(i)}>
+                <Art src={t.artUrl} size="w-9 h-9" rounded="rounded-md" iconSize={14} />
+                <div className="flex-1 min-w-0">
+                  <p className={cn('text-[13px] font-medium line-clamp-1', i === index && 'text-accent-hi')}>{t.title}</p>
+                  <p className="text-[11px] text-muted line-clamp-1">{t.artist}</p>
+                </div>
+              </div>
+              <span className="text-[11px] text-muted tabular-nums shrink-0">{formatTime(t.duration)}</span>
               {i !== index && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
                     player.removeFromQueue(i)
                   }}
-                  className="p-1.5 rounded text-muted opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-ink transition"
+                  className="p-1.5 rounded text-muted opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-ink transition shrink-0"
                 >
                   <X size={14} />
                 </button>
