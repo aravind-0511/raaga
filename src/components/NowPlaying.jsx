@@ -73,7 +73,7 @@ export default function NowPlaying() {
         )}
 
         <div className="text-center w-full">
-          <h1 className="font-display text-3xl md:text-4xl tracking-wide line-clamp-1">{current.title}</h1>
+          <h1 className="font-logo font-semibold text-3xl md:text-4xl tracking-tight line-clamp-1">{current.title}</h1>
           <p className="text-muted mt-1 line-clamp-1">
             {current.artist}
             {current.album ? ` · ${current.album}` : ''}

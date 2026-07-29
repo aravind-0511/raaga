@@ -52,7 +52,7 @@ export default function Settings() {
 
   return (
     <div className="fade-up max-w-2xl mx-auto">
-      <h1 className="font-display text-3xl md:text-4xl tracking-wide mb-6">Settings</h1>
+      <h1 className="font-logo font-semibold text-3xl md:text-4xl tracking-tight mb-6">Settings</h1>
 
       <Section
         icon={isLight ? Sun : Moon}

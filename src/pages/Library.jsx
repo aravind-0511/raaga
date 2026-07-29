@@ -67,7 +67,7 @@ export default function Library() {
   return (
     <div className="fade-up max-w-5xl mx-auto">
       <div className="flex items-center justify-between gap-3 mb-1">
-        <h1 className="font-display text-3xl md:text-4xl tracking-wide">Your Library</h1>
+        <h1 className="font-logo font-semibold text-3xl md:text-4xl tracking-tight">Your Library</h1>
         <button
           onClick={() => player.shufflePlayList(lib.tracks)}
           disabled={!lib.tracks.length}

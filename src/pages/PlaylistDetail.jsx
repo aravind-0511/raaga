@@ -95,7 +95,7 @@ export default function PlaylistDetail() {
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-[11px] uppercase tracking-widest text-muted">Playlist</p>
-          <h1 className="font-display text-3xl md:text-5xl tracking-wide line-clamp-2 mt-1">{playlist.name}</h1>
+          <h1 className="font-logo font-semibold text-3xl md:text-4xl tracking-tight line-clamp-2 mt-1">{playlist.name}</h1>
           {playlist.description && <p className="text-sm text-muted mt-1.5 line-clamp-2">{playlist.description}</p>}
           <p className="text-xs text-muted mt-2">
             {items.length} tracks · {formatDuration(totalSeconds)}

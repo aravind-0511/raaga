@@ -50,13 +50,10 @@
   --color-accent: var(--accent);
   --color-accent-hi: var(--accent-hi);
   --font-sans: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
-  /* Display headings / wordmark only — never body copy (keeps readable
-     text legible; see the "font-display" and "font-condensed" utilities). */
-  --font-display: "Montenegrin Gothic One", "Segoe UI", system-ui, sans-serif;
   /* Tall condensed numerals for big number moments (timer, stat counts). */
   --font-condensed: "Smooch Sans", "Segoe UI", system-ui, sans-serif;
-  /* Rounded heavy face matched to the "riff" wordmark — used for greetings /
-     page headings (font-logo utility). */
+  /* Rounded heavy face matched to the "riff" wordmark — used for every page
+     heading (font-logo utility), never body copy. */
   --font-logo: "Fredoka", "Segoe UI", system-ui, sans-serif;
 }
 
@@ -85,14 +82,15 @@ body {
   box-shadow: 0 0 40px -8px color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
-/* The "riff" wordmark PNG is a dark charcoal silhouette on transparent — it
-   would vanish on the near-black dark theme. Flatten it to a monochrome
-   silhouette and tint it toward the current theme's ink so it reads in both. */
+/* The "riff" wordmark PNG is a dark charcoal silhouette on a transparent
+   background. On the light theme that already reads fine as-is; on the
+   dark theme it needs to flip light to stay visible against the near-black
+   background. */
 .logo-wordmark {
-  filter: brightness(0) saturate(100%) invert(92%);
+  filter: invert(1);
 }
 :root[data-theme="light"] .logo-wordmark {
-  filter: brightness(0) saturate(100%) invert(8%);
+  filter: none;
 }
 
 /* scrollbars */

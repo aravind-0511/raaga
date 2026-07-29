@@ -53,7 +53,7 @@ export default function Browse() {
 
   return (
     <div className="fade-up max-w-5xl mx-auto">
-      <h1 className="font-display text-3xl md:text-4xl tracking-wide mb-6">Browse</h1>
+      <h1 className="font-logo font-semibold text-3xl md:text-4xl tracking-tight mb-6">Browse</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {CATEGORIES.map((cat) => (
