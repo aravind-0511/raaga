@@ -78,7 +78,7 @@ export default function QueueDrawer() {
                   e.dataTransfer.effectAllowed = 'move'
                 }}
                 title="Drag to reorder"
-                className="hidden md:flex text-muted/40 hover:text-muted cursor-grab active:cursor-grabbing shrink-0 touch-none"
+                className="hidden md:flex text-muted/40 hover:text-muted cursor-grab active:cursor-grabbing shrink-0 touch-none transition-colors"
               >
                 <GripVertical size={15} />
               </span>
@@ -87,7 +87,7 @@ export default function QueueDrawer() {
                 <button
                   onClick={() => player.moveInQueue(i, i - 1)}
                   disabled={i === 0}
-                  className="p-0.5 text-muted disabled:opacity-25 active:text-ink"
+                  className="p-0.5 text-muted disabled:opacity-25 active:text-ink transition"
                   title="Move up"
                 >
                   <ChevronUp size={15} />
@@ -95,7 +95,7 @@ export default function QueueDrawer() {
                 <button
                   onClick={() => player.moveInQueue(i, i + 1)}
                   disabled={i === queue.length - 1}
-                  className="p-0.5 text-muted disabled:opacity-25 active:text-ink"
+                  className="p-0.5 text-muted disabled:opacity-25 active:text-ink transition"
                   title="Move down"
                 >
                   <ChevronDown size={15} />

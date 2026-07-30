@@ -1,6 +1,7 @@
 import { Sliders } from 'lucide-react'
 import { useLibrary } from '../store/libraryStore'
 import { engine } from '../lib/player/engine'
+import { cn } from '../lib/utils'
 
 function EQSlider({ label, value, onChange, onReset }) {
   return (
@@ -40,7 +41,7 @@ export default function SoundControls({ track }) {
         Sound
         {!available && <span className="ml-auto text-[10px] text-muted/70">Unavailable for this stream</span>}
       </div>
-      <div className={available ? '' : 'opacity-40 pointer-events-none'}>
+      <div className={cn('transition-opacity duration-300', available ? '' : 'opacity-40 pointer-events-none')}>
         <div className="grid grid-cols-1 gap-3">
           <EQSlider
             label="Bass"

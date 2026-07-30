@@ -241,6 +241,19 @@ export const usePlayer = create((set, get) => ({
     set({ queue: newQueue, originalQueue: [...get().originalQueue, track] })
   },
 
+  // Bulk version — "add this whole playlist to the queue". Starts playback
+  // from it if nothing's queued yet, otherwise appends (or inserts right
+  // after the current track) in one shot.
+  addTracksToQueue: (tracks, { next = false } = {}) => {
+    if (!tracks.length) return
+    const { queue, index } = get()
+    if (!queue.length) return get().playTrack(tracks[0], tracks)
+    const insertAt = next ? index + 1 : queue.length
+    const newQueue = [...queue]
+    newQueue.splice(insertAt, 0, ...tracks)
+    set({ queue: newQueue, originalQueue: [...get().originalQueue, ...tracks] })
+  },
+
   removeFromQueue: (i) => {
     const { queue, index } = get()
     if (i === index) return

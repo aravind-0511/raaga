@@ -88,6 +88,7 @@ body {
    background. */
 .logo-wordmark {
   filter: invert(1);
+  transition: filter 0.3s ease;
 }
 :root[data-theme="light"] .logo-wordmark {
   filter: none;

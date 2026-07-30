@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Play, Shuffle, Pencil, Trash2, Users, GripVertical, ImagePlus, Check, ChevronUp, ChevronDown, Search as SearchIcon } from 'lucide-react'
+import { Play, Shuffle, ListEnd, Pencil, Trash2, Users, GripVertical, ImagePlus, Check, ChevronUp, ChevronDown, Search as SearchIcon } from 'lucide-react'
 import { useLibrary } from '../store/libraryStore'
 import { usePlayer } from '../store/playerStore'
 import { useSession } from '../store/sessionStore'
@@ -26,6 +26,7 @@ export default function PlaylistDetail() {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [query, setQuery] = useState('')
+  const [queued, setQueued] = useState(false)
   const coverInput = useRef(null)
   const dragFrom = useRef(null)
   const [dragOverIndex, setDragOverIndex] = useState(null)
@@ -138,6 +139,19 @@ export default function PlaylistDetail() {
                 <Shuffle size={15} />
               </button>
             )}
+            {items.length > 0 && (
+              <button
+                onClick={() => {
+                  player.addTracksToQueue(items)
+                  setQueued(true)
+                  setTimeout(() => setQueued(false), 1500)
+                }}
+                title="Add whole playlist to queue"
+                className="p-2.5 rounded-full bg-overlay/6 hover:bg-overlay/12 text-muted hover:text-ink transition active:scale-90"
+              >
+                {queued ? <Check size={15} className="text-accent-hi heart-pop" /> : <ListEnd size={15} />}
+              </button>
+            )}
             <button
               onClick={() => {
                 setName(playlist.name)
@@ -216,13 +230,13 @@ export default function PlaylistDetail() {
               className={cn('flex items-center gap-1 rounded-xl transition', dragOverIndex === i && 'outline-2 outline-accent-hi/60')}
             >
               {/* desktop: drag handle */}
-              <GripVertical size={14} className="hidden md:block text-muted/50 cursor-grab shrink-0 ml-1" />
+              <GripVertical size={14} className="hidden md:block text-muted/50 cursor-grab shrink-0 ml-1 transition-colors" />
               {/* mobile: up/down buttons (HTML5 drag doesn't work on touch) */}
               <div className="md:hidden flex flex-col shrink-0 -my-1">
                 <button
                   onClick={() => reorder(i, i - 1)}
                   disabled={i === 0}
-                  className="p-0.5 text-muted disabled:opacity-25 active:text-ink"
+                  className="p-0.5 text-muted disabled:opacity-25 active:text-ink transition"
                   title="Move up"
                 >
                   <ChevronUp size={16} />
@@ -230,7 +244,7 @@ export default function PlaylistDetail() {
                 <button
                   onClick={() => reorder(i, i + 1)}
                   disabled={i === items.length - 1}
-                  className="p-0.5 text-muted disabled:opacity-25 active:text-ink"
+                  className="p-0.5 text-muted disabled:opacity-25 active:text-ink transition"
                   title="Move down"
                 >
                   <ChevronDown size={16} />
