@@ -24,14 +24,43 @@ function flushListenLog() {
   }
 }
 
+// Fallback art for tracks with no cover — the OS notification/lock-screen
+// widget otherwise renders a blank square, which reads as broken.
+const FALLBACK_ARTWORK = [{ src: `${import.meta.env.BASE_URL}hand-in-rock.png`, sizes: '597x418', type: 'image/png' }]
+
 function applyMediaSession(track) {
   if (!('mediaSession' in navigator) || !track) return
   navigator.mediaSession.metadata = new MediaMetadata({
     title: track.title,
     artist: track.artist,
     album: track.album || 'Riff',
-    artwork: track.artUrl ? [{ src: track.artUrl }] : [],
+    artwork: track.artUrl ? [{ src: track.artUrl }] : FALLBACK_ARTWORK,
   })
+}
+
+// Keep the OS play/pause icon (lock screen, notification, hardware keys) in
+// sync with our own state — without this it can show "playing" while we're
+// actually paused, or vice versa.
+function applyPlaybackState(playing) {
+  if (!('mediaSession' in navigator)) return
+  navigator.mediaSession.playbackState = playing ? 'playing' : 'paused'
+}
+
+// Drives the notification/lock-screen scrubber and its live-updating time
+// readout. Wrapped in try/catch — Safari throws on out-of-range values
+// during rapid track changes (duration momentarily 0 or stale).
+function applyPositionState(position, duration) {
+  if (!('mediaSession' in navigator) || !navigator.mediaSession.setPositionState) return
+  if (!Number.isFinite(duration) || duration <= 0) return
+  try {
+    navigator.mediaSession.setPositionState({
+      duration,
+      playbackRate: 1,
+      position: Math.min(Math.max(0, position), duration),
+    })
+  } catch {
+    /* stale/out-of-range snapshot mid-transition — next tick corrects it */
+  }
 }
 
 // ---- session persistence (resume where you left off across reloads) ----
@@ -386,6 +415,8 @@ export const usePlayer = create((set, get) => ({
       playing: false,
     })
     applyMediaSession(cur)
+    applyPlaybackState(false)
+    applyPositionState(saved.position || 0, cur.duration || 0)
     getWaveform(cur.id).then((w) => {
       if (get().current?.id === cur.id) set({ peaks: w?.peaks || null })
     })
@@ -409,6 +440,7 @@ engine.on('time', ({ position, duration }) => {
   const s = usePlayer.getState()
   usePlayer.setState({ position, duration: duration || s.duration })
   persistSession() // throttled: keeps the saved resume-position current
+  applyPositionState(position, duration || s.duration)
 
   if (!engine.playing || !duration || s.advancing) return
   const remaining = duration - position
@@ -445,6 +477,7 @@ engine.on('ended', () => {
 engine.on('state', ({ playing }) => {
   const s = usePlayer.getState()
   usePlayer.setState({ playing })
+  applyPlaybackState(playing)
   if (!playing) {
     // pause: bank the listened time so far
     if (listenStart) {
@@ -463,6 +496,21 @@ if ('mediaSession' in navigator) {
   ms.setActionHandler('nexttrack', () => usePlayer.getState().next())
   ms.setActionHandler('previoustrack', () => usePlayer.getState().prev())
   ms.setActionHandler('seekto', (e) => usePlayer.getState().seek(e.seekTime))
+  // 10s skip — shows as dedicated ±10s buttons on Android/some desktop OS
+  // media widgets, alongside (or instead of) prev/next.
+  try {
+    ms.setActionHandler('seekbackward', (e) => {
+      const s = usePlayer.getState()
+      usePlayer.getState().seek(Math.max(0, s.position - (e.seekOffset || 10)))
+    })
+    ms.setActionHandler('seekforward', (e) => {
+      const s = usePlayer.getState()
+      usePlayer.getState().seek(Math.min(s.duration, s.position + (e.seekOffset || 10)))
+    })
+    ms.setActionHandler('stop', () => usePlayer.getState().close())
+  } catch {
+    /* not all browsers support every action — safe to skip individually */
+  }
 }
 
 window.addEventListener('beforeunload', flushListenLog)

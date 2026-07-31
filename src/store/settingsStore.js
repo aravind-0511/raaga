@@ -18,11 +18,21 @@ const DEFAULTS = {
   sidebarCollapsed: false,
 }
 
+// Mirrors the --bg token per theme (index.css) — kept as a small static map
+// rather than reading the computed style, since the meta tag must be set
+// before/without waiting on a paint.
+const THEME_BG = { dark: '#0a0a0b', light: '#e4d8c2' }
+
 function applySideEffects(state) {
   document.documentElement.dataset.accent = state.accent
   document.documentElement.dataset.theme = state.theme
   setCatalogBase(state.catalogUrl)
   engine.setVolume(state.volume)
+  // Tints the mobile status bar and the media notification/lock-screen
+  // widget's chrome to match the current theme instead of staying stuck on
+  // the dark-theme color baked into index.html.
+  const meta = document.querySelector('meta[name="theme-color"]')
+  if (meta) meta.content = THEME_BG[state.theme] || THEME_BG.dark
 }
 
 export const useSettings = create((set, get) => ({
