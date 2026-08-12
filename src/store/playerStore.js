@@ -24,6 +24,15 @@ function flushListenLog() {
   }
 }
 
+// Set right before any pause/stop *we* initiate (toggle, sleep timer, end of
+// queue, close, remote sync). Anything that pauses the active element
+// without this flag set is the browser doing it to us — mobile Chrome/Safari
+// will occasionally force-pause an actively-playing tab in the background
+// (autoplay-policy re-check, audio focus loss, memory pressure) — which is
+// what showed up as "pauses at the end, notification already shows the next
+// track." One silent auto-resume attempt recovers from that.
+let intentionalPause = false
+
 // Fallback art for tracks with no cover — the OS notification/lock-screen
 // widget otherwise renders a blank square, which reads as broken.
 const FALLBACK_ARTWORK = [{ src: `${import.meta.env.BASE_URL}hand-in-rock.png`, sizes: '597x418', type: 'image/png' }]
@@ -200,6 +209,7 @@ export const usePlayer = create((set, get) => ({
     const s = get()
     if (!s.current) return
     if (engine.playing) {
+      intentionalPause = true
       engine.pause()
       return
     }
@@ -223,6 +233,7 @@ export const usePlayer = create((set, get) => ({
       else {
         // end of queue, no repeat — stop, and clear the advance guard so a
         // later manual play isn't blocked by a stuck `advancing` flag
+        intentionalPause = true
         set({ playing: false, advancing: false })
         engine.pause()
         return
@@ -331,6 +342,7 @@ export const usePlayer = create((set, get) => ({
   setSleepTimer: (minutes) => {
     get().clearSleepTimer()
     const id = setTimeout(() => {
+      intentionalPause = true
       engine.pause()
       set({ sleepTimerEndsAt: null, _sleepTimerId: null })
     }, minutes * 60000)
@@ -349,7 +361,10 @@ export const usePlayer = create((set, get) => ({
     set({ queue, originalQueue: [...queue], index })
     await get()._start(track, { fade: false })
     if (position > 1) engine.seek(position)
-    if (!playing) engine.pause()
+    if (!playing) {
+      intentionalPause = true
+      engine.pause()
+    }
   },
 
   snapshotState: () => {
@@ -361,6 +376,7 @@ export const usePlayer = create((set, get) => ({
   // forget the saved session so a refresh won't bring it back.
   close: () => {
     flushListenLog()
+    intentionalPause = true
     engine.stop()
     clearSession()
     get().clearSleepTimer()
@@ -484,6 +500,18 @@ engine.on('state', ({ playing }) => {
       useLibrary.getState().logPlay(listenStart.track, Date.now() - listenStart.startedAt)
       listenStart = null
     }
+    if (!intentionalPause && s.current) {
+      // The browser paused us without being asked — try picking playback
+      // back up once. If it was a genuine autoplay-policy block, this will
+      // also fail silently and just leave it paused, which is no worse than
+      // today; but transient causes (audio focus blip, background policy
+      // hiccup) recover on their own instead of silently stalling.
+      setTimeout(() => {
+        const cur = usePlayer.getState()
+        if (!cur.playing && cur.current?.id === s.current.id) engine.resume().catch(() => {})
+      }, 400)
+    }
+    intentionalPause = false
   } else if (!listenStart && s.current) {
     listenStart = { track: s.current, startedAt: Date.now() }
   }
