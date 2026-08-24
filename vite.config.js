@@ -15,7 +15,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['hand-in-rock.png'],
+      includeAssets: ['hand-in-rock.png', 'pwa-192.png', 'pwa-512.png', 'pwa-maskable-512.png'],
       manifest: {
         name: 'Riff',
         short_name: 'Riff',
@@ -26,10 +26,16 @@ export default defineConfig({
         orientation: 'portrait',
         scope: base,
         start_url: base,
+        // Chrome only builds a real standalone WebAPK when it finds square
+        // 192px + 512px icons. Without them it silently downgrades "Install"
+        // to a plain home-screen bookmark that opens in a browser tab — and
+        // a background tab gets throttled/discarded by Android, which is what
+        // was randomly killing playback. The separate maskable copy keeps the
+        // hand inside the safe zone so OS shape masks can't crop it.
         icons: [
-          // Not marked maskable — the art already fills most of the frame with
-          // little margin, so an OS safe-zone mask would crop into the hand.
-          { src: 'hand-in-rock.png', sizes: '597x418', type: 'image/png', purpose: 'any' },
+          { src: 'pwa-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'pwa-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: 'pwa-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {
