@@ -3,15 +3,47 @@ import { dbPromise } from './db'
 // Single data-access seam. Everything below is async CRUD over IndexedDB;
 // swapping in Supabase later means reimplementing this module only.
 
-const objectUrls = new Map() // blobId -> object URL (session cache)
+// blobId -> object URL (session cache). Each entry pins its Blob in memory
+// for as long as the URL is registered, so this is capped LRU rather than
+// unbounded — over a long session (many tracks played/downloaded/art
+// fetched) an ever-growing cache here was a real contributor to memory
+// pressure, one of the things that makes a background tab a kill target.
+const objectUrls = new Map()
+const MAX_OBJECT_URLS = 40
+// Blobs that must never be evicted regardless of LRU order — the playback
+// engine pins whatever's actually loaded into a <video> element, since
+// revoking a URL still assigned as an element's src would cut the audio out
+// from under itself.
+const pinnedBlobIds = new Set()
+
+export function pinBlobUrl(blobId) {
+  if (blobId) pinnedBlobIds.add(blobId)
+}
+export function unpinBlobUrl(blobId) {
+  if (blobId) pinnedBlobIds.delete(blobId)
+}
 
 export async function blobUrl(blobId) {
   if (!blobId) return null
-  if (objectUrls.has(blobId)) return objectUrls.get(blobId)
+  if (objectUrls.has(blobId)) {
+    // touch: move to most-recently-used position
+    const url = objectUrls.get(blobId)
+    objectUrls.delete(blobId)
+    objectUrls.set(blobId, url)
+    return url
+  }
   const rec = await (await dbPromise).get('blobs', blobId)
   if (!rec) return null
   const url = URL.createObjectURL(rec.blob)
   objectUrls.set(blobId, url)
+  if (objectUrls.size > MAX_OBJECT_URLS) {
+    for (const [key, u] of objectUrls) {
+      if (pinnedBlobIds.has(key)) continue
+      URL.revokeObjectURL(u)
+      objectUrls.delete(key)
+      break
+    }
+  }
   return url
 }
 

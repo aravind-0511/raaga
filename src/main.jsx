@@ -19,22 +19,28 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 // Auto-apply new versions: when an updated service worker takes control,
 // reload once so the device never gets stuck on a stale cached build. A
 // reload tears down the audio element, so never do it while a track is
-// actively playing — that's exactly what was killing mobile playback
-// mid-song. Defer until playback is paused/stopped instead.
+// actively playing (was killing mobile playback mid-song) — and never do
+// it while the page is backgrounded either, since a silent reload behind
+// the user's back is indistinguishable from "the app just closed". Only
+// reload once both playback is stopped AND the page is the visible/
+// foreground tab.
 if ('serviceWorker' in navigator) {
   let reloading = false
   let pendingReload = false
+  const safeToReload = () => !usePlayer.getState().playing && document.visibilityState === 'visible'
   const reloadNow = () => {
     if (reloading) return
     reloading = true
     window.location.reload()
   }
+  const maybeReload = () => {
+    if (pendingReload && safeToReload()) reloadNow()
+  }
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (usePlayer.getState().playing) pendingReload = true
-    else reloadNow()
+    pendingReload = true
+    maybeReload()
   })
-  usePlayer.subscribe((state, prev) => {
-    if (pendingReload && prev.playing && !state.playing) reloadNow()
-  })
+  usePlayer.subscribe(maybeReload)
+  document.addEventListener('visibilitychange', maybeReload)
 }
 registerSW({ immediate: true })

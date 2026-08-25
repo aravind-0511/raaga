@@ -350,6 +350,20 @@ class PlayerEngine {
 
 export const engine = new PlayerEngine()
 
+// The AudioContext can be suspended by the OS/browser mid-playback (common
+// when backgrounded) without the <video> element itself ever pausing — it
+// keeps ticking currentTime forward with `paused===false`, so our state
+// still says "playing", but the Web Audio graph downstream of it is frozen
+// and produces no sound. Resuming it only happens today inside Slot.play(),
+// i.e. only when a *new* track starts — an already-playing track that gets
+// silently suspended has nothing to wake it back up. Recover whenever the
+// tab regains focus.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && engine.ctx?.state === 'suspended') {
+    engine.ctx.resume().catch(() => {})
+  }
+})
+
 if (import.meta.env.DEV) window.__raagaEngine = engine
 
 // module-level singletons: never hot-swap, always full-reload

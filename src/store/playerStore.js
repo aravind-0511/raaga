@@ -1,17 +1,32 @@
 import { create } from 'zustand'
 import { engine } from '../lib/player/engine'
-import { blobUrl, getWaveform, putWaveform, getBlobRecord } from '../lib/repo'
+import { blobUrl, getWaveform, putWaveform, getBlobRecord, pinBlobUrl, unpinBlobUrl } from '../lib/repo'
 import { computePeaks } from '../lib/player/waveform'
 import { pickStreamUrl } from '../lib/catalog/saavn'
 import { shuffleArray } from '../lib/utils'
 import { useSettings } from './settingsStore'
 import { useLibrary } from './libraryStore'
 
+// The object-URL cache in repo.js is a capped LRU; whatever's actually
+// loaded into the engine must be pinned so it can never be evicted out from
+// under active/paused playback.
+let pinnedBlobId = null
+function pinCurrentBlob(blobId) {
+  if (pinnedBlobId === blobId) return
+  if (pinnedBlobId) unpinBlobUrl(pinnedBlobId)
+  pinnedBlobId = blobId || null
+  if (pinnedBlobId) pinBlobUrl(pinnedBlobId)
+}
+
 async function resolveUrl(track) {
   if (track.blobId) {
     const url = await blobUrl(track.blobId)
-    if (url) return url
+    if (url) {
+      pinCurrentBlob(track.blobId)
+      return url
+    }
   }
+  pinCurrentBlob(null)
   return pickStreamUrl(track, useSettings.getState().quality)
 }
 
@@ -369,6 +384,7 @@ export const usePlayer = create((set, get) => ({
   close: () => {
     flushListenLog()
     engine.stop()
+    pinCurrentBlob(null)
     clearSession()
     get().clearSleepTimer()
     set({
