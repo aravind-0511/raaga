@@ -4,18 +4,24 @@ import { dbPromise } from './db'
 // swapping in Supabase later means reimplementing this module only.
 
 // blobId -> object URL (session cache). Each entry pins its Blob in memory
-// for as long as the URL is registered, so this is capped LRU rather than
-// unbounded — over a long session (many tracks played/downloaded/art
-// fetched) an ever-growing cache here was a real contributor to memory
-// pressure, one of the things that makes a background tab a kill target.
+// for as long as the URL is registered.
+//
+// Art/cover images (`art:`, `cover:` prefixes) are cached here permanently,
+// uncapped — they're small, bounded by library/playlist size, and stay
+// live in <img> tags across the whole app (grid views, queue, Now Playing)
+// for as long as that track/playlist is around. Evicting one of those out
+// from under a still-mounted <img> is what broke art thumbnails.
+//
+// Audio blobs (`blob:`, `dl:` prefixes) are the real memory concern — full
+// songs, potentially many MB each, and over a long session of browsing many
+// different tracks this was growing unbounded. Those alone get capped LRU
+// eviction, with an explicit pin so whatever's actually loaded into the
+// engine can never be evicted mid-playback.
 const objectUrls = new Map()
-const MAX_OBJECT_URLS = 40
-// Blobs that must never be evicted regardless of LRU order — the playback
-// engine pins whatever's actually loaded into a <video> element, since
-// revoking a URL still assigned as an element's src would cut the audio out
-// from under itself.
-const pinnedBlobIds = new Set()
+const MAX_AUDIO_URLS = 40
+const isAudioBlobId = (id) => id.startsWith('blob:') || id.startsWith('dl:')
 
+const pinnedBlobIds = new Set()
 export function pinBlobUrl(blobId) {
   if (blobId) pinnedBlobIds.add(blobId)
 }
@@ -36,12 +42,15 @@ export async function blobUrl(blobId) {
   if (!rec) return null
   const url = URL.createObjectURL(rec.blob)
   objectUrls.set(blobId, url)
-  if (objectUrls.size > MAX_OBJECT_URLS) {
-    for (const [key, u] of objectUrls) {
-      if (pinnedBlobIds.has(key)) continue
-      URL.revokeObjectURL(u)
-      objectUrls.delete(key)
-      break
+  if (isAudioBlobId(blobId)) {
+    const audioCount = [...objectUrls.keys()].filter(isAudioBlobId).length
+    if (audioCount > MAX_AUDIO_URLS) {
+      for (const [key, u] of objectUrls) {
+        if (!isAudioBlobId(key) || pinnedBlobIds.has(key)) continue
+        URL.revokeObjectURL(u)
+        objectUrls.delete(key)
+        break
+      }
     }
   }
   return url
