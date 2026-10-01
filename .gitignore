@@ -3,3 +3,18 @@ dist
 .env
 .env.local
 *.log
+
+# Android native project — keep android/ itself in version control (it's a
+# real project, not a build artifact), but never the signing key, local SDK
+# path, or Gradle/build output.
+android/keystore
+android/keystore.properties
+android/local.properties
+android/.gradle
+android/build
+android/app/build
+android/captures
+android/*.iml
+android/app/*.iml
+*.keystore
+*.jks
