@@ -1,8 +1,9 @@
-import { useState } from 'react'
-import { Volume2, Palette, Waves, Globe, MonitorSmartphone, Check, RotateCcw, Sun, Moon } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { Volume2, Palette, Waves, Globe, MonitorSmartphone, Check, RotateCcw, Sun, Moon, Download, Upload, Loader2, AlertTriangle } from 'lucide-react'
 import { useSettings } from '../store/settingsStore'
 import { useSession } from '../store/sessionStore'
 import { DEFAULT_CATALOG_URL, isValidCatalogUrl } from '../lib/catalog/saavn'
+import { exportLibraryBackup, importLibraryBackup } from '../lib/backup'
 import { cn } from '../lib/utils'
 
 const QUALITIES = [
@@ -39,6 +40,45 @@ export default function Settings() {
   const [urlDraft, setUrlDraft] = useState(settings.catalogUrl)
   const [urlError, setUrlError] = useState(false)
   const isLight = settings.theme === 'light'
+
+  const importInputRef = useRef(null)
+  const [transferBusy, setTransferBusy] = useState(null) // 'export' | 'import' | null
+  const [transferProgress, setTransferProgress] = useState(null) // { current, total }
+  const [transferResult, setTransferResult] = useState(null) // { kind: 'export'|'import', ...counts } | { error }
+
+  const runExport = async () => {
+    setTransferBusy('export')
+    setTransferResult(null)
+    setTransferProgress(null)
+    try {
+      const counts = await exportLibraryBackup((current, total) => setTransferProgress({ current, total }))
+      setTransferResult({ kind: 'export', ...counts })
+    } catch (err) {
+      setTransferResult({ error: err?.message || 'Export failed' })
+    } finally {
+      setTransferBusy(null)
+      setTransferProgress(null)
+    }
+  }
+
+  const runImport = async (file) => {
+    if (!file) return
+    setTransferBusy('import')
+    setTransferResult(null)
+    setTransferProgress(null)
+    try {
+      const counts = await importLibraryBackup(file, (current, total) => setTransferProgress({ current, total }))
+      setTransferResult({ kind: 'import', ...counts })
+      // Every store (library, likes, playlists, settings...) was initialized
+      // once at app boot — reload so they all pick up the freshly imported
+      // IndexedDB data instead of needing bespoke re-fetch logic everywhere.
+      setTimeout(() => window.location.reload(), 1800)
+    } catch (err) {
+      setTransferResult({ error: err?.message || 'Import failed' })
+      setTransferBusy(null)
+      setTransferProgress(null)
+    }
+  }
 
   const saveCatalogUrl = () => {
     const trimmed = urlDraft.trim()
@@ -208,6 +248,61 @@ export default function Settings() {
             <p className="text-xs text-muted">No other tabs open right now.</p>
           )}
         </div>
+      </Section>
+
+      <Section
+        icon={Download}
+        title="Backup & transfer library"
+        hint="Separate installs — like this PWA and the native Android app — don't share storage. Export everything into one file here, then import it on the other install to move your whole library over."
+      >
+        <div className="flex flex-col sm:flex-row gap-2">
+          <button
+            onClick={runExport}
+            disabled={!!transferBusy}
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-overlay/6 hover:bg-overlay/12 disabled:opacity-50 px-4 py-2.5 text-sm font-medium transition"
+          >
+            {transferBusy === 'export' ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
+            Export library
+          </button>
+          <button
+            onClick={() => importInputRef.current?.click()}
+            disabled={!!transferBusy}
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-overlay/6 hover:bg-overlay/12 disabled:opacity-50 px-4 py-2.5 text-sm font-medium transition"
+          >
+            {transferBusy === 'import' ? <Loader2 size={15} className="animate-spin" /> : <Upload size={15} />}
+            Import library
+          </button>
+          <input
+            ref={importInputRef}
+            type="file"
+            accept="application/json,.json"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              e.target.value = ''
+              runImport(file)
+            }}
+          />
+        </div>
+
+        {transferProgress && (
+          <p className="text-xs text-muted mt-3">
+            {transferBusy === 'export' ? 'Packing' : 'Restoring'} song files — {transferProgress.current}/{transferProgress.total}
+          </p>
+        )}
+
+        {transferResult && !transferResult.error && (
+          <p className="text-xs text-accent-hi mt-3">
+            {transferResult.kind === 'export'
+              ? `Exported ${transferResult.tracks} songs, ${transferResult.playlists} playlists, ${transferResult.likes} likes. Check your downloads.`
+              : `Imported ${transferResult.tracks} songs, ${transferResult.playlists} playlists, ${transferResult.likes} likes. Reloading…`}
+          </p>
+        )}
+        {transferResult?.error && (
+          <p className="flex items-center gap-1.5 text-xs text-rose-300 mt-3">
+            <AlertTriangle size={13} /> {transferResult.error}
+          </p>
+        )}
       </Section>
 
       <p className="text-[11px] text-muted mt-6 leading-relaxed">
