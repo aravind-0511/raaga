@@ -6,6 +6,7 @@ import { pickStreamUrl } from '../lib/catalog/saavn'
 import { shuffleArray } from '../lib/utils'
 import { useSettings } from './settingsStore'
 import { useLibrary } from './libraryStore'
+import * as nativeMediaSession from '../lib/player/nativeMediaSession'
 
 // The object-URL cache in repo.js is a capped LRU; whatever's actually
 // loaded into the engine must be pinned so it can never be evicted out from
@@ -49,6 +50,7 @@ function flushListenLog() {
 const FALLBACK_ARTWORK = [{ src: `${import.meta.env.BASE_URL}hand-in-rock.png`, sizes: '597x418', type: 'image/png' }]
 
 function applyMediaSession(track) {
+  nativeMediaSession.updateMetadata(track)
   if (!('mediaSession' in navigator) || !track) return
   navigator.mediaSession.metadata = new MediaMetadata({
     title: track.title,
@@ -62,6 +64,7 @@ function applyMediaSession(track) {
 // sync with our own state — without this it can show "playing" while we're
 // actually paused, or vice versa.
 function applyPlaybackState(playing) {
+  nativeMediaSession.updatePlaybackState(playing, usePlayer.getState().position)
   if (!('mediaSession' in navigator)) return
   navigator.mediaSession.playbackState = playing ? 'playing' : 'paused'
 }
@@ -70,6 +73,7 @@ function applyPlaybackState(playing) {
 // readout. Wrapped in try/catch — Safari throws on out-of-range values
 // during rapid track changes (duration momentarily 0 or stale).
 function applyPositionState(position, duration) {
+  nativeMediaSession.updatePlaybackState(usePlayer.getState().playing, position)
   if (!('mediaSession' in navigator) || !navigator.mediaSession.setPositionState) return
   if (!Number.isFinite(duration) || duration <= 0) return
   try {
@@ -385,6 +389,7 @@ export const usePlayer = create((set, get) => ({
     flushListenLog()
     engine.stop()
     pinCurrentBlob(null)
+    nativeMediaSession.stop()
     clearSession()
     get().clearSleepTimer()
     set({
@@ -535,6 +540,30 @@ if ('mediaSession' in navigator) {
     /* not all browsers support every action — safe to skip individually */
   }
 }
+
+// Native notification/lock-screen/hardware button presses, routed through
+// the same actions as the web MediaSession handlers above. No-op on web.
+nativeMediaSession.onAction(({ action, position }) => {
+  const s = usePlayer.getState()
+  switch (action) {
+    case 'play':
+    case 'pause':
+      s.toggle()
+      break
+    case 'next':
+      s.next()
+      break
+    case 'previous':
+      s.prev()
+      break
+    case 'seek':
+      s.seek(position)
+      break
+    case 'stop':
+      s.close()
+      break
+  }
+})
 
 window.addEventListener('beforeunload', flushListenLog)
 
