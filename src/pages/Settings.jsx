@@ -275,7 +275,7 @@ export default function Settings() {
           <input
             ref={importInputRef}
             type="file"
-            accept="application/json,.json"
+            accept=".riffbackup,application/octet-stream"
             className="hidden"
             onChange={(e) => {
               const file = e.target.files?.[0]
