@@ -24,6 +24,21 @@
 
         </activity>
 
+        <!-- Declares Riff as a music player app (APP_MUSIC category) for
+             system pickers/launchers that list "music apps". An alias with
+             no LAUNCHER category so it doesn't add a second home-screen icon. -->
+        <activity-alias
+            android:name=".MusicPlayerAlias"
+            android:targetActivity=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_launcher">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.APP_MUSIC" />
+            </intent-filter>
+        </activity-alias>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

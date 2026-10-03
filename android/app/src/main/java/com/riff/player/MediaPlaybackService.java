@@ -47,6 +47,7 @@ public class MediaPlaybackService extends Service {
     private boolean playing = false;
     private long positionMs = 0;
     private long durationMs = 0;
+    private boolean isForeground = false;
 
     @Override
     public void onCreate() {
@@ -91,7 +92,14 @@ public class MediaPlaybackService extends Service {
             }
         });
         mediaSession.setActive(true);
-        publishState(false);
+        // The plugin starts this service with startForegroundService(), and
+        // Android kills the whole app (ForegroundServiceDidNotStartInTime
+        // exception) if startForeground() isn't called within a few seconds.
+        // Previously that only happened once a track was actually *playing*,
+        // so starting while paused (restored session on launch, or the
+        // service restarting after the notification was dismissed) crashed
+        // the app a few seconds later. Always go foreground immediately.
+        publishState(true);
     }
 
     @Override
@@ -204,10 +212,18 @@ public class MediaPlaybackService extends Service {
         Notification notification = buildNotification();
         if (playing) {
             startForegroundCompat(notification);
+            isForeground = true;
         } else {
+            // Must have called startForeground() at least once since being
+            // started (see onCreate), even if the very first state is paused.
+            if (!isForeground) {
+                startForegroundCompat(notification);
+                isForeground = true;
+            }
             // paused: stay as a regular (dismissible) notification, not an
             // ongoing foreground one, same convention most music apps use
             ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_DETACH);
+            isForeground = false;
             NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (nm != null) nm.notify(NOTIFICATION_ID, notification);
         }
@@ -245,7 +261,7 @@ public class MediaPlaybackService extends Service {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_riff)
-            .setContentTitle(title)
+            .setContentTitle(title.isEmpty() ? "Riff" : title)
             .setContentText(artist)
             .setSubText(album)
             .setLargeIcon(artwork)
