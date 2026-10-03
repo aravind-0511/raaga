@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Sparkles, History, Timer, Play } from 'lucide-react'
+import { Sparkles, History, Timer, Play, X } from 'lucide-react'
 import { useLibrary, recentTracks } from '../store/libraryStore'
 import { usePlayer } from '../store/playerStore'
 import { Art, SectionTitle } from './../components/ui'
@@ -86,10 +86,18 @@ export default function Home() {
           <SectionTitle>Recently played</SectionTitle>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {recents.map(({ track, playedAt }) => (
+              <div key={track.id} className="relative">
               <button
-                key={track.id}
+                onClick={() => lib.clearTrackHistory(track.id)}
+                title="Remove from recently played"
+                aria-label="Remove from recently played"
+                className="absolute top-1.5 right-1.5 z-10 w-7 h-7 grid place-items-center rounded-full bg-black/60 text-white/90 hover:bg-black/80 active:scale-90 transition"
+              >
+                <X size={14} />
+              </button>
+              <button
                 onClick={() => player.playTrack(track, recents.map((r) => r.track))}
-                className="glass lift rounded-xl p-3 text-left hover:bg-overlay/8 transition group"
+                className="w-full glass lift rounded-xl p-3 text-left hover:bg-overlay/8 transition group"
               >
                 <div className="relative mb-2.5">
                   <Art src={track.artUrl} size="w-full aspect-square h-auto" rounded="rounded-lg" iconSize={28} />
@@ -100,6 +108,7 @@ export default function Home() {
                 <p className="text-sm font-medium line-clamp-1">{track.title}</p>
                 <p className="text-[11px] text-muted line-clamp-1">{relativeDate(playedAt)}</p>
               </button>
+              </div>
             ))}
           </div>
         </>

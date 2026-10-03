@@ -4,8 +4,8 @@ import {
   putBlob, getBlobRecord, deleteBlob, blobUrl,
   getAllPlaylists, putPlaylist, deletePlaylist,
   getAllLikes, setLiked,
-  addPlayEvent, getAllPlayEvents,
-  putWaveform,
+  addPlayEvent, getAllPlayEvents, deletePlayEventsForTrack,
+  putWaveform, getAllSettings, putSetting,
 } from '../lib/repo'
 import { extractMetadata, isMediaFile } from '../lib/metadata'
 import { computePeaks } from '../lib/player/waveform'
@@ -108,7 +108,21 @@ export const useLibrary = create((set, get) => ({
     return { added, skipped: files.length - added }
   },
 
+  // Remove one song's entries from "Recently played" (and its listening
+  // history, which Insights also reads from).
+  clearTrackHistory: async (trackId) => {
+    await deletePlayEventsForTrack(trackId)
+    set((s) => ({ playEvents: s.playEvents.filter((e) => e.trackId !== trackId) }))
+  },
+
   removeTrack: async (id) => {
+    // Bundled demo songs are re-created on every launch if missing, so
+    // remember the removal or the song would just come back.
+    const removing = get().tracks.find((t) => t.id === id)
+    if (removing?.source === 'demo') {
+      const removed = (await getAllSettings()).removedDemos || []
+      if (!removed.includes(id)) await putSetting('removedDemos', [...removed, id])
+    }
     await deleteTrack(id)
     set((s) => ({
       tracks: s.tracks.filter((t) => t.id !== id),

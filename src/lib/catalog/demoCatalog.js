@@ -3,7 +3,7 @@
 // Keeps Search/Browse/playback fully working with no network and no
 // copyrighted material.
 
-import { putBlob, putTrack, getTrack, putWaveform } from '../repo'
+import { putBlob, putTrack, getTrack, putWaveform, getAllSettings } from '../repo'
 import { computePeaks } from '../player/waveform'
 
 const SAMPLE_RATE = 22050
@@ -119,7 +119,10 @@ function audioBufferToWav(buffer) {
 // Idempotent: renders + stores any demo tracks missing from the library.
 export async function ensureDemoCatalog() {
   const created = []
+  // demo ids the user deliberately removed — don't resurrect them on launch
+  const removed = (await getAllSettings()).removedDemos || []
   for (const def of DEMOS) {
+    if (removed.includes(def.id)) continue
     if (await getTrack(def.id)) continue
     try {
       const blob = await renderLoop(def)

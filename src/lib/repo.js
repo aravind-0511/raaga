@@ -125,6 +125,13 @@ export async function addPlayEvent(event) {
 export async function getAllPlayEvents() {
   return (await dbPromise).getAllFromIndex('playEvents', 'byTime')
 }
+export async function deletePlayEventsForTrack(trackId) {
+  const db = await dbPromise
+  const keys = await db.getAllKeysFromIndex('playEvents', 'byTrack', trackId)
+  const tx = db.transaction('playEvents', 'readwrite')
+  for (const k of keys) tx.store.delete(k)
+  await tx.done
+}
 
 // waveforms
 export async function getWaveform(trackId) {

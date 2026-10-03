@@ -11,6 +11,9 @@ export default function TrackRow({ track, context, index, onRemove, showAlbum = 
   const liked = useLibrary((s) => !!s.likes[track.id])
   const downloading = useLibrary((s) => s.downloadingIds.has(track.id))
   const playlists = useLibrary((s) => s.playlists)
+  // only offer removal for songs actually saved in the library (a catalog
+  // search result you haven't played/saved yet isn't in it)
+  const libraryHas = useLibrary((s) => s.tracks.some((t) => t.id === track.id))
   const isCurrent = current?.id === track.id
   const lib = useLibrary.getState()
   const player = usePlayer.getState()
@@ -125,8 +128,8 @@ export default function TrackRow({ track, context, index, onRemove, showAlbum = 
           <MenuItem icon={Trash2} onClick={() => lib.removeDownload(track)}>Remove download</MenuItem>
         )}
         {onRemove && <MenuItem icon={Trash2} danger onClick={() => onRemove(track, index)}>Remove from here</MenuItem>}
-        {track.source === 'local' && (
-          <MenuItem icon={Trash2} danger onClick={() => lib.removeTrack(track.id)}>Delete from library</MenuItem>
+        {libraryHas && (
+          <MenuItem icon={Trash2} danger onClick={() => lib.removeTrack(track.id)}>Remove from library</MenuItem>
         )}
       </Menu>
     </div>
